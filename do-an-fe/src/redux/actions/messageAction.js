@@ -8,7 +8,9 @@ export const MESS_TYPES = {
     GET_MESSAGES: 'GET_MESSAGES',
     UPDATE_MESSAGES: 'UPDATE_MESSAGES',
     DELETE_MESSAGES: 'DELETE_MESSAGES',
-    DELETE_CONVERSATION: 'DELETE_CONVERSATION'
+    DELETE_CONVERSATION: 'DELETE_CONVERSATION',
+    CHECK_ONLINE_OFFLINE: 'CHECK_ONLINE_OFFLINE'
+
 }
 // export const addUser = ({ user, message }) => dispatch => {
 //     //kiểm tra user._id trong mảng message.users có khác user._id trong mảng vừa search được hay hay không?
@@ -19,9 +21,10 @@ export const MESS_TYPES = {
 // }
 
 export const addMessage = ({ msg, auth, socket }) => async dispatch => {
-    console.log(msg)
+    // console.log(msg)
     dispatch({ type: MESS_TYPES.ADD_MESSAGE, payload: msg })
-    socket.emit('addMessage', msg)
+    const { _id, avatar, fullname, username } = auth.user
+    socket.emit('addMessage', { ...msg, user: { _id, avatar, fullname, username } })
     try {
         await postDataAPI('message', msg, auth.token);
     } catch (err) {

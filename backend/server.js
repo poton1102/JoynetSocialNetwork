@@ -6,6 +6,7 @@ const mongoose = require("mongoose")
 const cookieParser = require('cookie-parser')
 const { readdirSync } = require("fs")
 const SocketServer = require('./socketServer')
+const { PeerServer } = require('peer')
 
 const app = express();
 app.use(express.json())
@@ -22,6 +23,8 @@ io.on('connection', socket => {
     SocketServer(socket)
     console.log(socket.id + ' connected1234')
 })
+//create peer server
+PeerServer({ port: 3001, path: '/' })
 
 //Routes
 app.use('/api', require('./routes/authRouter'))

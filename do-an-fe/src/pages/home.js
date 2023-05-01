@@ -1,17 +1,17 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import Status from '../components/home/Status'
 import Posts from '../components/home/Posts'
 import { useSelector } from 'react-redux'
 import LoadIcon from '../images/loading.gif'
 import RightSideBar from '../components/home/RightSideBar'
 const Home = () => {
-    const{homePosts}=useSelector(state=>state)
+    const { homePosts } = useSelector(state => state)
 
     return (
         <div className="home mt-70 row mx-0">
             <div className="col-md-8">
                 <Status />
-                
+
                 {/* <Posts /> */}
                 {
                     homePosts.loading

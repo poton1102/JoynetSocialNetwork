@@ -11,7 +11,7 @@ import { addMessage, deleteConversation, getMessages, loadMoreMessages, MESS_TYP
 import LoadIcon from '../../images/loading.gif'
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 function RightSide() {
-    const { auth, message, theme, socket } = useSelector(state => state)
+    const { auth, message, theme, socket, peer } = useSelector(state => state)
     const dispatch = useDispatch()
 
     const { id } = useParams()
@@ -170,6 +170,42 @@ function RightSide() {
         }
     }
 
+    //call
+    // Call
+    const caller = ({ video }) => {
+        const { _id, avatar, username, fullname } = user
+
+        const msg = {
+            sender: auth.user._id,
+            recipient: _id,
+            avatar, username, fullname, video
+        }
+        dispatch({ type: GLOBALTYPES.CALL, payload: msg })
+    }
+
+    const callUser = ({ video }) => {
+        const { _id, avatar, username, fullname } = auth.user
+
+        const msg = {
+            sender: _id,
+            recipient: user._id,
+            avatar, username, fullname, video
+        }
+
+        if (peer.open) msg.peerId = peer._id
+
+        socket.emit('callUser', msg)
+    }
+
+    const handleAudioCall = () => {
+        caller({ video: false })
+        callUser({ video: false })
+    }
+
+    const handleVideoCall = () => {
+        caller({ video: true })
+        callUser({ video: true })
+    }
     return (
         <>
             <div className="message_header">
@@ -178,9 +214,11 @@ function RightSide() {
                     <UserCard user={user}>
                         <div>
                             <i className="fas fa-phone-alt"
+                                onClick={handleAudioCall}
                             />
 
                             <i className="fas fa-video mx-3"
+                                onClick={handleVideoCall}
                             />
 
                             <i className="fas fa-trash text-danger"

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+// import { useDispatch, useSelector } from "react-redux";
+// import { useParams } from "react-router-dom";
 // import { getProfileUsers } from "../../redux/actions/profileAction";
 import Avatar from "../Avatar";
 import FollowBtn from "../FollowBtn";

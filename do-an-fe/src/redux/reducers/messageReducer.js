@@ -82,6 +82,14 @@ const messageReducer = (state = initialState, action) => {
                 users: DeleteData(state.users, action.payload),
                 data: DeleteData(state.data, action.payload)
             }
+        case MESS_TYPES.CHECK_ONLINE_OFFLINE:
+            return {
+                ...state,
+                users: state.users.map(user =>
+                    action.payload.includes(user._id) ? { ...user, online: true } : { ...user, online: false }
+                ),
+
+            }
         default:
             return state;
     }

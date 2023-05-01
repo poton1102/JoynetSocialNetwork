@@ -3,7 +3,7 @@ import PostThumb from '../PostThumb'
 import LoadIcon from '../../images/loading.gif'
 import LoadMoreBtn from '../LoadMoreBtn'
 import { getDataAPI } from '../../utils/fetchData'
-import { PROFILE_TYPES } from '../../redux/actions/profileAction'
+// import { PROFILE_TYPES } from '../../redux/actions/profileAction'
 import { GLOBALTYPES } from '../../redux/actions/globalTypes'
 
 const Saved = ({ auth, dispatch }) => {

@@ -5,10 +5,10 @@ export const GLOBALTYPES = {
     STATUS: 'STATUS',
     MODAL: 'MODAL',
     SOCKET: 'SOCKET',
-    // ONLINE: 'ONLINE',
-    // OFFLINE: 'OFFLINE',
-    // CALL: 'CALL',
-    // PEER: 'PEER'
+    ONLINE: 'ONLINE',
+    OFFLINE: 'OFFLINE',
+    CALL: 'CALL',
+    PEER: 'PEER'
 }
 // EditData(state.posts, action.payload._id, action.payload)
 export const EditData = (data, id, post) => {

@@ -21,9 +21,10 @@ import io from 'socket.io-client'
 import SocketClient from './SocketClient'
 import { getNotifies } from './redux/actions/notifyAction'
 import LoadingHome from './components/alert/LoadingHome'
-
+import CallModal from './components/message/CallModal'
+import Peer from 'peerjs'
 function App() {
-  const { auth, status, modal } = useSelector(state => state)
+  const { auth, status, modal, call } = useSelector(state => state)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -57,13 +58,14 @@ function App() {
   }, [])
 
 
-  // useEffect(() => {
-  //   const newPeer = new Peer(undefined, {
-  //     path: '/', secure: true
-  //   })
+  useEffect(() => {
+    const newPeer = new Peer(undefined, {
+      // path: '/', secure: true
+      host: '/', port: '3001'
+    })
 
-  //   dispatch({ type: GLOBALTYPES.PEER, payload: newPeer })
-  // }, [dispatch])
+    dispatch({ type: GLOBALTYPES.PEER, payload: newPeer })
+  }, [dispatch])
 
 
   return (
@@ -77,6 +79,7 @@ function App() {
           {auth.token && <Header />}
           {status && <StatusModal />}
           {auth.token && <SocketClient />}
+          {call && <CallModal />}
           <Route exact path="/" component={auth.token ? Home : Login} />
           <Route exact path="/register" component={Register} />
 

@@ -7,7 +7,7 @@ import { useHistory, useParams } from "react-router-dom";
 import { MESS_TYPES, addUser, getConversations } from "../../redux/actions/messageAction";
 
 function LeftSide() {
-    const { auth, message } = useSelector(state => state)
+    const { auth, message, online } = useSelector(state => state)
     const dispatch = useDispatch()
     const [search, setSearch] = useState('')
     const [searchUsers, setSearchUser] = useState([])
@@ -74,6 +74,11 @@ function LeftSide() {
         }
     }, [message.resultUsers, page, auth, dispatch])
 
+    //check user online-offline
+    useEffect(() => {
+        if (message.firstLoad) dispatch({ type: MESS_TYPES.CHECK_ONLINE_OFFLINE, payload: online })
+    }, [online, message.firstLoad, dispatch])
+
 
     return (
         <>
@@ -104,7 +109,11 @@ function LeftSide() {
                                 message.users.map(user => (
                                     <div key={user._id} className={`message_user ${isActive(user)}`} onClick={() => handleAddUser(user)}>
                                         <UserCard user={user} msg={true}>
-                                            <i className="fas fa-circle" />
+                                            {
+                                                user.online ? <i className="fas fa-circle text-success" /> :
+                                                    auth.user.following.find(item => item._id === user._id) && <i className="fas fa-circle" />
+                                            }
+
                                         </UserCard>
                                     </div>
                                 ))
