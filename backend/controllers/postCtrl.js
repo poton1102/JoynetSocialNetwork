@@ -13,7 +13,7 @@ class APIfeatures {
         //3 trang mỗi trang 6 sản phẩm
         //skip=2*6=12
         const page = this.queryString.page * 1 || 1 //3 trang
-        const limit = this.queryString.limit * 1 || 9//6
+        const limit = this.queryString.limit * 1 || 30//6
         const skip = (page - 1) * limit//2x6=12, skip(12)   
         this.query = this.query.skip(skip).limit(limit)
         return this;
