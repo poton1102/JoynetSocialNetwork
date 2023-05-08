@@ -22,11 +22,16 @@ const Post = () => {
         }
     }, [detailPost, dispatch, id, auth])
     return (
-        <div className="posts mt-70">
-            {
-                post.length === 0 &&
-                <img src={LoadIcon} alt="loading" className="d-block mx-auto my-4" />
-            }
+        <div className="posts mt-70 main">
+            <div className='mt-70'>
+                {
+
+                    post.length === 0 &&
+                    <img src={LoadIcon} alt="loading" className="d-block mx-auto my-4" />
+
+                }
+            </div>
+
 
             {
                 post.map(item => (

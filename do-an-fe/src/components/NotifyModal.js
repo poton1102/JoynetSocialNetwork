@@ -29,7 +29,7 @@ function NotifyModal() {
     return (
         <div style={{ minWidth: '300px' }}>
             <div className="d-flex justify-content-between align-items-center px-3">
-                <h3>Notification</h3>
+                <h3>Thông báo</h3>
                 {
                     notify.sound
                         ? <i className="fas fa-bell "

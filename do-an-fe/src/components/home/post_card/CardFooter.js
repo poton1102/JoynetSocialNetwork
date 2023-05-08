@@ -87,6 +87,7 @@ const CardFooter = ({ post }) => {
                         <i className="far fa-comment" />
                     </Link>
 
+
                     <img src={Send} alt="Send" onClick={() => setIsShare(!isShare)} />
                 </div>
 

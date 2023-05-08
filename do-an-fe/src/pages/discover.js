@@ -7,42 +7,42 @@ import LoadMoreBtn from '../components/LoadMoreBtn';
 import { getDataAPI } from '../utils/fetchData';
 
 function Discover() {
-    const{auth,discover}=useSelector(state=>state)
-    const dispatch=useDispatch()
-    const [load,setLoad]=useState(false)
+    const { auth, discover } = useSelector(state => state)
+    const dispatch = useDispatch()
+    const [load, setLoad] = useState(false)
     useEffect(() => {
-        if(!discover.firstLoad){
+        if (!discover.firstLoad) {
             dispatch(getDiscoverPosts(auth.token))
         }
-    },[dispatch, auth.token, discover.firstLoad])
+    }, [dispatch, auth.token, discover.firstLoad])
 
     const handleLoadMore = async () => {
         setLoad(true)
         const res = await getDataAPI(`post_discover?num=${discover.page * 3}`, auth.token)
-        dispatch({type: DISCOVER_TYPES.UPDATE_POST, payload: res.data})
+        dispatch({ type: DISCOVER_TYPES.UPDATE_POST, payload: res.data })
         setLoad(false)
     }
 
     return (
-        <div className='mt-70'>
-        {
-            discover.loading 
-            ? <img src={LoadIcon} alt="loading" className="d-block mx-auto my-4" />
-            : <PostThumb posts={discover.posts} result={discover.result} />
-        }
+        <div className='mt-70 main'>
+            {
+                discover.loading
+                    ? <img src={LoadIcon} alt="loading" className="d-block mx-auto my-4" />
+                    : <div className='mt-70'> <PostThumb posts={discover.posts} result={discover.result} /></div>
+            }
 
-        {
-            load && <img src={LoadIcon} alt="loading" className="d-block mx-auto" />
-        }
+            {
+                load && <img src={LoadIcon} alt="loading" className="d-block mx-auto" />
+            }
 
-        {
-            !discover.loading &&
-            <LoadMoreBtn result={discover.result} page={discover.page}
-            load={load} handleLoadMore={handleLoadMore} />
-        }
-        
-    </div>
-      );
+            {/* {
+                !discover.loading &&
+                <LoadMoreBtn result={discover.result} page={discover.page}
+                    load={load} handleLoadMore={handleLoadMore} />
+            } */}
+
+        </div>
+    );
 }
 
 export default Discover;

@@ -23,6 +23,7 @@ import { getNotifies } from './redux/actions/notifyAction'
 import LoadingHome from './components/alert/LoadingHome'
 import CallModal from './components/message/CallModal'
 import Peer from 'peerjs'
+
 function App() {
   const { auth, status, modal, call } = useSelector(state => state)
   const dispatch = useDispatch()
@@ -69,24 +70,26 @@ function App() {
 
 
   return (
+
     <Router>
       <Alert />
+      {/* {ssss} */}
       {/* <Loading/> */}
       {/* <LoadingHome /> */}
       <input type="checkbox" id="theme" />
       <div className={`App ${(status || modal) && 'mode'}`}>
-        <div className="main">
-          {auth.token && <Header />}
-          {status && <StatusModal />}
-          {auth.token && <SocketClient />}
-          {call && <CallModal />}
-          <Route exact path="/" component={auth.token ? Home : Login} />
-          <Route exact path="/register" component={Register} />
+        {/* <div className="main"> */}
+        {auth.token && <Header />}
+        {status && <StatusModal />}
+        {auth.token && <SocketClient />}
+        {call && <CallModal />}
+        <Route exact path="/" component={auth.token ? Home : Login} />
+        <Route exact path="/register" component={Register} />
 
-          <PrivateRouter exact path="/:page" component={PageRender} />
-          <PrivateRouter exact path="/:page/:id" component={PageRender} />
+        <PrivateRouter exact path="/:page" component={PageRender} />
+        <PrivateRouter exact path="/:page/:id" component={PageRender} />
 
-        </div>
+        {/* </div> */}
       </div>
     </Router>
   );

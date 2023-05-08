@@ -11,11 +11,10 @@ const RightSideBar = () => {
     const dispatch = useDispatch()
 
     return (
-        <div className="mt-3">
-            <UserCard user={auth.user} />
-
-            <div className="d-flex justify-content-between align-items-center my-2">
-                <h5 className="" style={{ color: "#0066ff" }}>Suggestions for you</h5>
+        <div className="mt-3 ">
+            {/* <UserCard user={auth.user} /> */}
+            <div className="d-flex justify-content-between align-items-center my-2 ">
+                <h5 className="" style={{ color: "#0066ff" }}>Đề nghị cho bạn</h5>
                 {
                     !suggestions.loading &&
                     <i className="fas fa-redo" style={{ cursor: 'pointer' }}

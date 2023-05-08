@@ -132,7 +132,9 @@ function CommentCard({ children, comment, post, commentId }) {
                                     </small>
                                 </>
 
-                                : <small className="font-weight-bold mr-3"
+                                :
+
+                                <small className="font-weight-bold mr-3"
                                     onClick={handleReply}>
                                     {onReply ? 'cancel' : 'reply'}
                                 </small>

@@ -21,11 +21,15 @@ const Profile = () => {
     }, [id, auth, dispatch])
 
     return (
-        <div className='profile mt-70' >
-            <Info auth={auth} profile={profile} dispatch={dispatch} id={id} />
+        <div className='profile mt-70 main' >
+            <div className='mt-70'>
+                <Info auth={auth} profile={profile} dispatch={dispatch} id={id} />
+            </div>
+
+
             {
                 auth.user._id === id &&
-                <div className="profile_tab">
+                <div className="profile_tab ">
                     <button className={saveTab ? '' : 'active'} onClick={() => setSaveTab(false)}>Posts</button>
                     <button className={saveTab ? 'active' : ''} onClick={() => setSaveTab(true)}>Saved</button>
                 </div>

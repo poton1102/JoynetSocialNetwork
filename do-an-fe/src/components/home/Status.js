@@ -9,11 +9,11 @@ function Status() {
     return (
         <div className="status my-3 d-flex">
             <Avatar src={auth.user.avatar} size="big-avatar" />
-            
+
             <button className="statusBtn flex-fill"
-            onClick={() => dispatch({ type: GLOBALTYPES.STATUS, payload: true })}
+                onClick={() => dispatch({ type: GLOBALTYPES.STATUS, payload: true })}
             >
-                {auth.user.username}, what are you thinking?
+                {auth.user.username}, bạn đang nghĩ gì?
             </button>
         </div>
     );

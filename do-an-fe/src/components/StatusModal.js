@@ -115,7 +115,7 @@ const StatusModal = () => {
     return (
         <div className="status_modal mt-70">
 
-            <form onSubmit={handleSubmit}>,theme
+            <form onSubmit={handleSubmit}>
                 <div className="status_header">
                     <h5 className="m-0">Create Post</h5>
                     <span onClick={() => dispatch({
@@ -183,7 +183,7 @@ const StatusModal = () => {
                     {
                         stream &&
                         <div className="stream position-relative">
-                            <video autoPlay muted ref={videoRef} width="100%" height="100%"
+                            <video cl autoPlay muted ref={videoRef} width="100%" height="100%"
                                 style={{ filter: theme ? 'invert(1)' : 'invert(0)' }} />
 
                             <span onClick={handleStopStream}>&times;</span>
@@ -197,10 +197,10 @@ const StatusModal = () => {
                         {
                             stream ?
                                 // handleCapture là click để chụp ảnh
-                                <i className='fas fa-camera' onClick={handleCapture} />
+                                <i className='fas fa-camera d-none' onClick={handleCapture} />
                                 :
                                 <>
-                                    <i className='fas fa-camera' onClick={handleStream} />
+                                    <i className='fas fa-camera d-none' onClick={handleStream} />
 
                                     <div className="file_upload">
                                         <i className="fas fa-image" />
@@ -214,7 +214,6 @@ const StatusModal = () => {
                     </div>
 
                 </div>
-
                 <div className="status_footer">
                     <button className="btn btn-secondary w-100" type="submit">
                         Post

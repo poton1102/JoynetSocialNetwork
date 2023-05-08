@@ -44,8 +44,8 @@ const Saved = ({ auth, dispatch }) => {
             }
 
 
-            <LoadMoreBtn result={result} page={page}
-                load={load} handleLoadMore={handleLoadMore} />
+            {/* <LoadMoreBtn result={result} page={page}
+                load={load} handleLoadMore={handleLoadMore} /> */}
 
         </div>
     )
