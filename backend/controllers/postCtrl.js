@@ -1,7 +1,7 @@
 const Posts = require('../models/postModel')
 const Comments = require('../models/commentModel')
 const Users = require('../models/userModel')
-
+const Report = require('../models/reportModel')
 class APIfeatures {
     constructor(query, queryString) {
         this.query = query;
@@ -257,6 +257,27 @@ const postCtrl = {
             return res.status(500).json({ msg: err.message })
         }
     },
+
+    reportPost: async (req, res) => {
+        try {
+            const { post, reason } = req.body
+            const newReport = new Report({
+                post,
+                user: req.user._id,
+                reason
+            })
+            await newReport.save()
+
+            res.json({
+                msg: 'Reported post successfully!'
+            })
+
+        }
+        catch (err) {
+            return res.status(500).json({ msg: err.message })
+        }
+
+    }
 
 
 }

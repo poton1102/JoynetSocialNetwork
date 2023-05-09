@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: 'https://res.cloudinary.com/dmhcnhtng/image/upload/v1643044376/avatars/default_pic_jeaybr.png'
     },
-    role: { type: Number, default: 0 },//0 user,1=admin
+    role: { type: String, default: 'user' },//0 user,1=admin
     gender: { type: String, default: 'male' },
     mobile: { type: String, default: '' },
     address: { type: String, default: '' },

@@ -18,8 +18,8 @@ const CardHeader = ({ post }) => {
     }
 
     const handleDeletePost = () => {
-        if(window.confirm("Are you sure want to delete this post?")){
-            dispatch(deletePost({post, auth, socket}))
+        if (window.confirm("Are you sure want to delete this post?")) {
+            dispatch(deletePost({ post, auth, socket }))
             return history.push("/")
         }
     }
@@ -27,6 +27,11 @@ const CardHeader = ({ post }) => {
     const handleCopyLink = () => {
         navigator.clipboard.writeText(`${BASE_URL}/post/${post._id}`)
     }
+
+    const handleReportPost = () => {
+
+    }
+
 
     return (
         <div className="card_header">
@@ -62,11 +67,15 @@ const CardHeader = ({ post }) => {
                             <div className="dropdown-item" onClick={handleDeletePost} >
                                 <span className="material-icons">delete_outline</span> Remove Post
                             </div>
+
+                            <div className="dropdown-item" onClick={handleReportPost} >
+                                <span className="material-icons">flag</span> Report
+                            </div>
                         </>
                     }
 
                     <div className="dropdown-item" onClick={handleCopyLink}>
-                 
+
                         <span className="material-icons">content_copy</span> Copy Link
                     </div>
                 </div>
