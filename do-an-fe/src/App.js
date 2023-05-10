@@ -7,6 +7,7 @@ import PrivateRouter from './customRouter/PrivateRouter'
 import Home from './pages/home'
 import Login from './pages/login'
 import Register from './pages/register'
+import Reports from './pages/reports'
 
 import Alert from './components/alert/Alert'
 import Header from './components/header/Header'
@@ -73,7 +74,6 @@ function App() {
 
     <Router>
       <Alert />
-      {/* {ssss} */}
       {/* <Loading/> */}
       {/* <LoadingHome /> */}
       <input type="checkbox" id="theme" />
@@ -83,11 +83,13 @@ function App() {
         {status && <StatusModal />}
         {auth.token && <SocketClient />}
         {call && <CallModal />}
+
+
         <Route exact path="/" component={auth.token ? Home : Login} />
         <Route exact path="/register" component={Register} />
-
         <PrivateRouter exact path="/:page" component={PageRender} />
         <PrivateRouter exact path="/:page/:id" component={PageRender} />
+
 
         {/* </div> */}
       </div>

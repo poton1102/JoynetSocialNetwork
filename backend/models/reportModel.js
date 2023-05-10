@@ -1,21 +1,30 @@
-// reportModel.js
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const reportSchema = new mongoose.Schema({
-    post: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Post'
+const reportSchema = new mongoose.Schema(
+    {
+        post: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Post',
+            required: true,
+        },
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+        },
+        reason: {
+            type: String,
+            required: true,
+        },
+        reporter: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+        },
     },
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    },
-    reason: {
-        type: String,
-        required: true
+    {
+        timestamps: true,
     }
-}, {
-    timestamps: true
-})
+);
 
-module.exports = mongoose.model('Report', reportSchema)
+module.exports = mongoose.model('Report', reportSchema);

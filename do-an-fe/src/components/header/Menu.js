@@ -8,14 +8,18 @@ import NotifyModal from '../NotifyModal'
 // import NotifyModal from '../NotifyModal'
 
 const Menu = () => {
+    const { auth, theme, notify } = useSelector(state => state)
     const navLinks = [
+        // { label: 'Reports', icon: 'report', path: '/reports', admin: true },
         { label: 'Home', icon: 'home', path: '/' },
         { label: 'Message', icon: 'chat', path: '/message' },
-        // { label: 'Discover', icon: 'explore', path: '/discover' }
-
+        { label: 'Discover', icon: 'explore', path: '/discover' },
     ]
 
-    const { auth, theme, notify } = useSelector(state => state)
+    if (auth.user.role === 'admin') {
+        navLinks.unshift({ label: 'Reports', icon: 'report', path: '/reports' })
+    }
+
     const dispatch = useDispatch()
     const { pathname } = useLocation()
 
@@ -26,13 +30,23 @@ const Menu = () => {
     return (
         <div className="menu">
             <ul className="navbar-nav flex-row">
+                {/* {auth.user.role === 'admin' && (
+                    <li className="nav-item px-2">
+                        <Link className="nav-link" to="/reports">
+                            <span className="material-icons home-icon">report</span>
+                        </Link>
+                    </li>
+                )} */}
+
                 {
                     navLinks.map((link, index) => (
-                        <li className={`nav-item px-2 ${isActive(link.path)}`} key={index}>
-                            <Link className="nav-link" to={link.path}>
-                                <span className="material-icons home-icon" >{link.icon}</span>
-                            </Link>
-                        </li>
+                        (link.admin && !auth.admin) ? null : (
+                            <li className={`nav-item px-2 ${isActive(link.path)}`} key={index}>
+                                <Link className="nav-link" to={link.path}>
+                                    <span className="material-icons home-icon" >{link.icon}</span>
+                                </Link>
+                            </li>
+                        )
                     ))
                 }
 

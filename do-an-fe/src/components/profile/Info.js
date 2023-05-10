@@ -87,8 +87,7 @@ function Info({ id, auth, profile, dispatch }) {
                         </div>
 
                         {
-                            onEdit && <EditProfile
-                                setOnEdit={setOnEdit} />
+                            onEdit && <EditProfile setOnEdit={setOnEdit} />
                         }
 
 

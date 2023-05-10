@@ -193,8 +193,28 @@ const postCtrl = {
     },
     deletePost: async (req, res) => {
         try {
-            const post = await Posts.findOneAndDelete({ _id: req.params.id, user: req.user._id })
+            // const post = await Posts.findOneAndDelete({ _id: req.params.id, user: req.user._id })
+            // await Comments.deleteMany({ _id: { $in: post.comments } })
+
+            // res.json({
+            //     msg: 'Deleted Post!',
+            //     newPost: {
+            //         ...post,
+            //         user: req.user
+            //     }
+            // })
+            const post = await Posts.findOne({ _id: req.params.id })
+            if (!post) {
+                return res.status(404).json({ msg: 'Post not found' })
+            }
+
+            // Kiểm tra xem user có role "admin" hay không
+            if (req.user.role !== 'admin' && post.user !== req.user._id) {
+                return res.status(403).json({ msg: 'Access denied' })
+            }
+
             await Comments.deleteMany({ _id: { $in: post.comments } })
+            await post.remove()
 
             res.json({
                 msg: 'Deleted Post!',
@@ -204,7 +224,8 @@ const postCtrl = {
                 }
             })
 
-        } catch (err) {
+        }
+        catch (err) {
             return res.status(500).json({ msg: err.message })
         }
     },
@@ -258,25 +279,58 @@ const postCtrl = {
         }
     },
 
+    // reportPost: async (req, res) => {
+    //     try {
+    //         const { postId, reason } = req.body
+    //         const newReport = new Report({
+    //             post: postId,
+    //             user: req.user._id,
+    //             reason
+    //         });
+    //         await newReport.save()
+
+    //         res.json({
+    //             msg: 'Báo cáo bài viết thành công!',
+    //         })
+
+    //     }
+    //     catch (err) {
+    //         return res.status(500).json({ msg: err.message })
+    //     }
+    // }
+
+
     reportPost: async (req, res) => {
         try {
-            const { post, reason } = req.body
+            const { reason } = req.body;
+            // console.log({ postId })
+            // // Kiểm tra xem bài viết có tồn tại không
+            // const post = await Posts.findOne({ _id: postId });
+
+            const post = await Posts.findOne({ _id: req.params.id })
+
+            if (!post) {
+                return res.status(404).json({ msg: 'Bài viết không tồn tại.' });
+            }
+
+            // if (!reason) {
+            //     return res.status(400).json({ msg: "Vui lòng cung cấp lý do báo cáo." });
+            // }
+            // Tạo báo cáo mới
             const newReport = new Report({
-                post,
-                user: req.user._id,
-                reason
-            })
-            await newReport.save()
+                post: post,
+                user: post.user,
+                reason: 'abc',
+                reporter: req.user._id, // Thông tin người báo cáo
+            });
+            await newReport.save();
 
             res.json({
-                msg: 'Reported post successfully!'
-            })
-
+                msg: 'Báo cáo bài viết thành công!',
+            });
+        } catch (err) {
+            return res.status(500).json({ msg: err.message });
         }
-        catch (err) {
-            return res.status(500).json({ msg: err.message })
-        }
-
     }
 
 

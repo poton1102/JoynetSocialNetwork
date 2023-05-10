@@ -94,7 +94,7 @@ img {
 /* -------- Call Modal---------- */
 @import url("./call_modal.css");
 
-
+@import url("./post_report.css");
 
 /* --------- Responsive ------ */
 @media (max-width: 766px) {

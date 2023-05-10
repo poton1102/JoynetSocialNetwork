@@ -6,12 +6,14 @@ import moment from 'moment'
 import { GLOBALTYPES } from '../../../redux/actions/globalTypes'
 import { deletePost } from '../../../redux/actions/postAction'
 import { BASE_URL } from '../../../utils/config'
-
+import { useState } from 'react'
+import ReportForm from '../ReportForm'
 const CardHeader = ({ post }) => {
     const { auth, socket } = useSelector(state => state)
     const dispatch = useDispatch()
-
     const history = useHistory()
+
+    const [onReport, setOnReport] = useState(false)
 
     const handleEditPost = () => {
         dispatch({ type: GLOBALTYPES.STATUS, payload: { ...post, onEdit: true } })
@@ -28,12 +30,9 @@ const CardHeader = ({ post }) => {
         navigator.clipboard.writeText(`${BASE_URL}/post/${post._id}`)
     }
 
-    const handleReportPost = () => {
-
-    }
-
 
     return (
+
         <div className="card_header">
             <div className="d-flex">
                 <Avatar src={post.user.avatar} size="big-avatar" />
@@ -59,7 +58,7 @@ const CardHeader = ({ post }) => {
                 <div className="dropdown-menu">
                     {
                         //đúng người đăng post mới được xóa bài viết
-                        auth.user._id === post.user._id &&
+                        (auth.user._id === post.user._id || auth.user.role === 'admin') &&
                         <>
                             <div className="dropdown-item" onClick={handleEditPost}>
                                 <span className="material-icons">create</span> Edit Post
@@ -68,18 +67,26 @@ const CardHeader = ({ post }) => {
                                 <span className="material-icons">delete_outline</span> Remove Post
                             </div>
 
-                            <div className="dropdown-item" onClick={handleReportPost} >
-                                <span className="material-icons">flag</span> Report
-                            </div>
                         </>
                     }
 
                     <div className="dropdown-item" onClick={handleCopyLink}>
 
                         <span className="material-icons">content_copy</span> Copy Link
+
                     </div>
+                    {
+                        auth.user.role !== 'admin' &&
+                        <div className="dropdown-item" onClick={() => setOnReport(true)}>
+                            <span className="material-icons">flag</span> Report
+                        </div>
+                    }
+
                 </div>
             </div>
+            {
+                onReport && <ReportForm setOnEdit={setOnReport} post={post} />
+            }
         </div>
     )
 }
