@@ -9,8 +9,8 @@ export const REPORT_TYPES = {
 
 export const createReport = ({ post, reportData, auth }) => async (dispatch) => {
 
-    if (reportData.story.length > 200)
-        return dispatch({ type: GLOBALTYPES.ALERT, payload: { error: "Báo cáo của bạn quá dài." } })
+    if (reportData.length > 200)
+        return dispatch({ type: GLOBALTYPES.ALERT, payload: { error: "Báo cáo chỉ được tối đa 200 ký tự." } })
 
     try {
         dispatch({ type: GLOBALTYPES.ALERT, payload: { loading: true } })

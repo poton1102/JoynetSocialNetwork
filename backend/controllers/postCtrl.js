@@ -302,7 +302,7 @@ const postCtrl = {
 
     reportPost: async (req, res) => {
         try {
-            const { reason } = req.body;
+            const { reportData } = req.body;
             // console.log({ postId })
             // // Kiểm tra xem bài viết có tồn tại không
             // const post = await Posts.findOne({ _id: postId });
@@ -320,7 +320,7 @@ const postCtrl = {
             const newReport = new Report({
                 post: post,
                 user: post.user,
-                reason: 'abc',
+                reason: reportData,
                 reporter: req.user._id, // Thông tin người báo cáo
             });
             await newReport.save();

@@ -22,7 +22,7 @@ const adminCtrl = {
             await Report.deleteMany({ post: req.params.id })
 
             res.json({
-                msg: 'Deleted post successfully!'
+                msg: 'Xóa bài viết thành công!'
             })
         }
         catch (err) {

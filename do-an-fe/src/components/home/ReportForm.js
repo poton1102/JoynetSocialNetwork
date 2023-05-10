@@ -4,30 +4,30 @@ import { GLOBALTYPES } from "../../redux/actions/globalTypes"
 import { createReport } from "../../redux/actions/reportAction"
 function ReportForm({ setOnEdit, post }) {
     // console.log(post)
-    const initState = {
-        reports: '',
-        user: ''
-    }
+    // const initState = {
+    //     reports: '',
+    //     user: ''
+    // }
 
-    const [reportData, setReportData] = useState(initState)
-
-    const { reports } = reportData
-
+    // const [reportData, setReportData] = useState(initState)
+    const [reportData, setReportData] = useState("")
+    // const { reports } = reportData
+    // console.log(reports, reportData)
     const { auth, theme } = useSelector(state => state)
     const dispatch = useDispatch()
 
 
-    useEffect(() => {
-        setReportData(auth.user)
-    }, [auth.user])
+    // useEffect(() => {
+    //     setReportData(auth.user)
+    // }, [auth.user])
 
     //để xử lý input, lưu giá trị vào user
     const handleInput = e => {
         // const { name, value } = e.target
         // setReportData({ ...reportData, [name]: value })
         const { value } = e.target;
+        // setReportData({ ...reportData, reports: value });
         setReportData(value);
-        //1 mang gom fullname, mobile,... de set cho thằng state
     }
 
     const handleSubmit = e => {
@@ -51,12 +51,12 @@ function ReportForm({ setOnEdit, post }) {
 
                     <div className="form-group ">
                         <label htmlFor="story">Nội dung báo cáo</label>
-                        <textarea name="story" value={reports} cols="30" rows="4"
+                        <textarea name="story" value={reportData} cols="30" rows="4"
                             className="form-control" onChange={handleInput} />
 
-                        {/* <small className="text-danger d-block text-right">
-                            {reports.length}/200
-                        </small> */}
+                        <small className="text-danger d-block text-right">
+                            {reportData?.length}/200
+                        </small>
                     </div>
 
                     <button className="btn btn-info w-100" type="submit">Gửi báo cáo</button>
