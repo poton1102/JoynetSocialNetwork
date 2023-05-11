@@ -24,6 +24,7 @@ import { getNotifies } from './redux/actions/notifyAction'
 import LoadingHome from './components/alert/LoadingHome'
 import CallModal from './components/message/CallModal'
 import Peer from 'peerjs'
+import { getAllReports } from './redux/actions/reportAction'
 
 function App() {
   const { auth, status, modal, call } = useSelector(state => state)
@@ -42,6 +43,7 @@ function App() {
       dispatch(getPosts(auth.token))
       dispatch(getSuggestions(auth.token))
       dispatch(getNotifies(auth.token))
+      dispatch(getAllReports(auth.token))
     }
   }, [dispatch, auth.token])
 

@@ -4,12 +4,12 @@ const reportSchema = new mongoose.Schema(
     {
         post: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Post',
+            ref: 'post',
             required: true,
         },
         user: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
+            ref: 'user',
             required: true,
         },
         reason: {
@@ -18,7 +18,7 @@ const reportSchema = new mongoose.Schema(
         },
         reporter: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
+            ref: 'user',
             required: true,
         },
     },
@@ -27,4 +27,7 @@ const reportSchema = new mongoose.Schema(
     }
 );
 
-module.exports = mongoose.model('Report', reportSchema);
+module.exports = mongoose.model('report', reportSchema);
+
+
+

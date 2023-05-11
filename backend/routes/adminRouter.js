@@ -4,4 +4,6 @@ const adminCtrl = require('../controllers/adminCtrl')
 //get list of reported posts
 router.get('/reports', adminCtrl.getReports)
 
-router.delete('/post/:id', adminCtrl.deletePost);
+router.delete('/report/:id', adminCtrl.deleteReport);
+
+module.exports = router

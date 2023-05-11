@@ -34,6 +34,7 @@ app.use('/api', require('./routes/commentRouter'))
 app.use('/api', require('./routes/notifyRouter'))
 app.use('/api', require('./routes/messageRouter'))
 
+app.use('/api', require('./routes/adminRouter'))
 mongoose.connect(URI, {
     useCreateIndex: true,
     useNewUrlParser: true,

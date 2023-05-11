@@ -325,15 +325,20 @@ const postCtrl = {
             });
             await newReport.save();
 
+
             res.json({
                 msg: 'Báo cáo bài viết thành công!',
+                newReport: {
+                    ...newReport._doc,
+                    reporter: req.user
+                }
             });
         } catch (err) {
             return res.status(500).json({ msg: err.message });
         }
     }
 
-
 }
+
 
 module.exports = postCtrl
