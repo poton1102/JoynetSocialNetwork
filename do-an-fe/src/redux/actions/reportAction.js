@@ -1,5 +1,6 @@
 import { deleteDataAPI, getDataAPI, postDataAPI } from "../../utils/fetchData";
 import { GLOBALTYPES } from "./globalTypes";
+import { createNotify, createNotifyReport } from "./notifyAction";
 
 export const REPORT_TYPES = {
     CREATE_REPORT: 'CREATE_REPORT',
@@ -35,7 +36,7 @@ export const getAllReports = (token) => async (dispatch) => {
     try {
         dispatch({ type: GLOBALTYPES.ALERT, payload: { loading: true } })
         const res = await getDataAPI('reports', token)
-        // console.log(res.data)
+        // console.log(res.data.reports)
 
         dispatch({
             type: REPORT_TYPES.GET_ALL_REPORT,
@@ -52,26 +53,40 @@ export const getAllReports = (token) => async (dispatch) => {
     }
 }
 
-export const deleteReport = ({ reportId, auth, socket }) => async (dispatch) => {
-    // console.log({post,auth})
+export const deleteReport = ({ report, auth, socket }) => async (dispatch) => {
+    console.log({ report });
 
     try {
         // const res = await deleteDataAPI(`report/${report.reports._id}`, auth.token)
-        await deleteDataAPI(`report/${reportId}`, auth.token)
-        dispatch({ type: REPORT_TYPES.DELETE_REPORT, payload: reportId })
+
+        //-------------------
+        await deleteDataAPI(`report/${report._id}`, auth.token)
+        dispatch({ type: REPORT_TYPES.DELETE_REPORT, payload: report._id })
 
         // Gọi API để lấy danh sách báo cáo mới từ backend
         const res = await getDataAPI('reports', auth.token);
         dispatch({ type: REPORT_TYPES.GET_ALL_REPORT, payload: { ...res.data } })
 
-        // console.log(res)
-        // Notify
+        // console.log(res.reports)
+        //------------------------
+
         const msg = {
-            id: reportId,
+            id: report.post._id,
             text: 'đã xóa bài viết của bạn vì vi phạm.',
-            recipients: res.data.newPost.user.followers,
-            url: `/post/${reportId}`,
+            recipients: report.user._id,
+            url: `/post/${report.post._id}`,
         }
+
+
+        dispatch(createNotify({ msg, auth, socket }))
+
+        // Notify
+        // const msg = {
+        //     id: reportId,
+        //     text: 'đã xóa bài viết của bạn vì vi phạm.',
+        //     recipients: res.data.newPost.user.followers,
+        //     url: `/post/${reportId}`,
+        // }
 
         // dispatch(removeNotify({ msg, auth, socket }))
         // Notify
