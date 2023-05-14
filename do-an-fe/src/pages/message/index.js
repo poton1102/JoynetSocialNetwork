@@ -13,7 +13,8 @@ const Message = () => {
 
                     <i className="fab fa-facebook-messenger text-primary"
                         style={{ fontSize: '5rem' }} />
-                    <h4>Messenger</h4>
+                    {/* <img alt='' href="../../../public/joynet-logo.png"></img> */}
+                    <h4>Joynet</h4>
                 </div>
             </div>
         </div>

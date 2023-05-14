@@ -3,11 +3,11 @@ import { useSelector, useDispatch } from 'react-redux'
 import { POST_TYPES } from './redux/actions/postAction'
 import { GLOBALTYPES } from './redux/actions/globalTypes'
 import { NOTIFY_TYPES } from './redux/actions/notifyAction'
-// import { MESS_TYPES } from './redux/actions/messageAction'
-
-// import audiobell from './audio/got-it-done-613.mp3'
-import audiobell from './audio/ringring.mp3'
 import { MESS_TYPES } from './redux/actions/messageAction'
+
+import audiobell from './audio/got-it-done-613.mp3'
+
+
 const spawnNotification = (body, icon, url, title) => {
     let options = {
         body, icon
@@ -20,21 +20,23 @@ const spawnNotification = (body, icon, url, title) => {
     }
 }
 
-function SocketClient() {
-    const { auth, socket, notify, online } = useSelector(state => state)
+const SocketClient = () => {
+    const { auth, socket, notify, online, call } = useSelector(state => state)
     const dispatch = useDispatch()
+
     const audioRef = useRef()
-    //joinUser
+
+    // joinUser
     useEffect(() => {
         socket.emit('joinUser', auth.user)
     }, [socket, auth.user])
 
-    //likes
+    // Likes
     useEffect(() => {
         socket.on('likeToClient', newPost => {
-            // console.log(newPost)
             dispatch({ type: POST_TYPES.UPDATE_POST, payload: newPost })
         })
+
         return () => socket.off('likeToClient')
     }, [socket, dispatch])
 
@@ -46,6 +48,7 @@ function SocketClient() {
         return () => socket.off('unLikeToClient')
     }, [socket, dispatch])
 
+
     // Comments
     useEffect(() => {
         socket.on('createCommentToClient', newPost => {
@@ -55,7 +58,6 @@ function SocketClient() {
         return () => socket.off('createCommentToClient')
     }, [socket, dispatch])
 
-
     useEffect(() => {
         socket.on('deleteCommentToClient', newPost => {
             dispatch({ type: POST_TYPES.UPDATE_POST, payload: newPost })
@@ -63,6 +65,7 @@ function SocketClient() {
 
         return () => socket.off('deleteCommentToClient')
     }, [socket, dispatch])
+
 
     // Follow
     useEffect(() => {
@@ -81,18 +84,18 @@ function SocketClient() {
         return () => socket.off('unFollowToClient')
     }, [socket, dispatch, auth])
 
+
     // Notification
     useEffect(() => {
         socket.on('createNotifyToClient', msg => {
             dispatch({ type: NOTIFY_TYPES.CREATE_NOTIFY, payload: msg })
 
             if (notify.sound) audioRef.current.play()
-
             spawnNotification(
                 msg.user.username + ' ' + msg.text,
                 msg.user.avatar,
                 msg.url,
-                'MANG XA HOI'
+                'V-NETWORK'
             )
         })
 
@@ -101,18 +104,18 @@ function SocketClient() {
 
     useEffect(() => {
         socket.on('removeNotifyToClient', msg => {
-            console.log(msg)
             dispatch({ type: NOTIFY_TYPES.REMOVE_NOTIFY, payload: msg })
         })
 
         return () => socket.off('removeNotifyToClient')
     }, [socket, dispatch])
 
+
     // Message
     useEffect(() => {
         socket.on('addMessageToClient', msg => {
             dispatch({ type: MESS_TYPES.ADD_MESSAGE, payload: msg })
-            // console.log(msg)
+
             dispatch({
                 type: MESS_TYPES.ADD_USER,
                 payload: {
@@ -133,7 +136,6 @@ function SocketClient() {
 
     useEffect(() => {
         socket.on('checkUserOnlineToMe', data => {
-            // console.log(data)
             data.forEach(item => {
                 if (!online.includes(item.id)) {
                     dispatch({ type: GLOBALTYPES.ONLINE, payload: item.id })
@@ -164,13 +166,32 @@ function SocketClient() {
     }, [socket, dispatch])
 
 
+    // Call User
+    useEffect(() => {
+        socket.on('callUserToClient', data => {
+            dispatch({ type: GLOBALTYPES.CALL, payload: data })
+        })
+
+        return () => socket.off('callUserToClient')
+    }, [socket, dispatch])
+
+    useEffect(() => {
+        socket.on('userBusy', data => {
+            dispatch({ type: GLOBALTYPES.ALERT, payload: { error: `${call.username} is busy!` } })
+        })
+
+        return () => socket.off('userBusy')
+    }, [socket, dispatch, call])
+
+
+
     return (
         <>
             <audio controls ref={audioRef} style={{ display: 'none' }} >
                 <source src={audiobell} type="audio/mp3" />
             </audio>
         </>
-    );
+    )
 }
 
 export default SocketClient

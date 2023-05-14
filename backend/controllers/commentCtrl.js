@@ -8,11 +8,11 @@ const commentCtrl = {
             const { postId, content, tag, reply, postUserId } = req.body
 
             const post = await Posts.findById(postId)
-            if (!post) return res.status(400).json({ msg: "This post does not exist." })
+            if (!post) return res.status(400).json({ msg: "Bài viết này không tồn tại." })
 
             if (reply) {
                 const cm = await Comments.findById(reply)
-                if (!cm) return res.status(400).json({ msg: "This comment does not exist." })
+                if (!cm) return res.status(400).json({ msg: "Comment này không tồn tại." })
             }
 
             const newComment = new Comments({
@@ -40,7 +40,7 @@ const commentCtrl = {
                 _id: req.params.id, user: req.user._id
             }, { content })
 
-            res.json({ msg: 'Update Success!' })
+            res.json({ msg: 'Cập nhật thành công!' })
 
         } catch (err) {
             return res.status(500).json({ msg: err.message })
@@ -50,13 +50,13 @@ const commentCtrl = {
     likeComment: async (req, res) => {
         try {
             const comment = await Comments.find({ _id: req.params.id, likes: req.user._id })
-            if (comment.length > 0) return res.status(400).json({ msg: "You liked this post." })
+            if (comment.length > 0) return res.status(400).json({ msg: "Bạn đã thích bài viết." })
 
             await Comments.findOneAndUpdate({ _id: req.params.id }, {
                 $push: { likes: req.user._id }
             }, { new: true })
 
-            res.json({ msg: 'Liked Comment!' })
+            res.json({ msg: 'Đã thích bình luận!' })
 
         } catch (err) {
             return res.status(500).json({ msg: err.message })
@@ -69,7 +69,7 @@ const commentCtrl = {
                 $pull: { likes: req.user._id }
             }, { new: true })
 
-            res.json({ msg: 'UnLiked Comment!' })
+            res.json({ msg: 'Bỏ thích bình luận!' })
 
         } catch (err) {
             return res.status(500).json({ msg: err.message })
@@ -89,7 +89,7 @@ const commentCtrl = {
                 $pull: { comments: req.params.id }
             })
 
-            res.json({ msg: 'Deleted Comment!' })
+            res.json({ msg: 'Đã xóa bình luận!' })
 
         } catch (err) {
             return res.status(500).json({ msg: err.message })

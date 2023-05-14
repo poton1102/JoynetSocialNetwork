@@ -35,17 +35,17 @@ const Login = () => {
                 <h3 className="text-uppercase text-center mb-4">Joynet</h3>
 
                 <div className="form-group">
-                    <label htmlFor="exampleInputEmail1">Email address</label>
+                    <label htmlFor="exampleInputEmail1">Email</label>
                     <input type="email" className="form-control" id="exampleInputEmail1" name="email"
                         aria-describedby="emailHelp" onChange={handleChangeInput} value={email} />
 
                     <small id="emailHelp" className="form-text text-muted">
-                        We'll never share your email with anyone else.
+                        Chúng tôi sẽ không chia sẻ email cho ai
                     </small>
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="exampleInputPassword1">Password</label>
+                    <label htmlFor="exampleInputPassword1">Mật khẩu</label>
 
                     <div className="pass">
 
@@ -60,13 +60,13 @@ const Login = () => {
 
                 </div>
 
-                <button type="submit" className="btn btn-dark w-100"
+                <button type="submit" className="btn btn-dark w-100 col bg-primary"
                     disabled={email && password ? false : true}>
-                    Login
+                    Đăng nhập
                 </button>
 
                 <p className="my-2">
-                    You don't have an account? <Link to="/register" style={{ color: "0066ff" }}>Register Now</Link>
+                    Bạn không có tài khoản? <Link to="/register" style={{ color: "0066ff" }}>Đăng ký ngay</Link>
                 </p>
             </form>
         </div>

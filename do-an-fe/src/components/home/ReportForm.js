@@ -42,7 +42,7 @@ function ReportForm({ setOnEdit, post }) {
         <div className="edit_profile mt-70" onSubmit={handleSubmit}>
             <button className="btn btn-danger btn_close"
                 onClick={() => setOnEdit(false)}>
-                Close
+                Đóng
             </button>
 
             <div className="mt-140">

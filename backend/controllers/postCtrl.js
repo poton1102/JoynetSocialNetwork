@@ -25,8 +25,17 @@ const postCtrl = {
         try {
             const { content, images } = req.body
 
+
+
+            // Kiểm tra trạng thái chặn đăng bài của người dùng
+            const user = await Users.findById(req.user._id);
+            if (user.isPostBlockedUntil && user.isPostBlockedUntil > new Date()) {
+                // Ngăn chặn chủ bài viết đăng bài
+                return res.status(403).json({ msg: 'You are temporarily blocked from posting.' });
+            }
+
             if (images.length === 0)
-                return res.status(400).json({ msg: "Please add your photo." })
+                return res.status(400).json({ msg: "Hãy thêm ảnh." })
 
             const newPost = new Posts({
                 content, images, user: req.user._id
@@ -34,7 +43,7 @@ const postCtrl = {
             await newPost.save()
 
             res.json({
-                msg: 'Created Post!',
+                msg: 'Tạo post thành công!',
                 newPost: {
                     ...newPost._doc,
                     user: req.user
@@ -88,7 +97,7 @@ const postCtrl = {
                 })
 
             res.json({
-                msg: "Updated Post!",
+                msg: "Update bài viết thành công!",
                 newPost: {
                     ...post._doc,
                     content, images
@@ -104,13 +113,13 @@ const postCtrl = {
             //and to check if the likes array includes the _id of the current user.
             //If a post is found, that means the user has already liked it, so the server will respond with an error message in JSON format.
             const post = await Posts.find({ _id: req.params.id, likes: req.user._id })
-            if (post.length > 0) return res.status(400).json({ msg: "You liked this post." })
+            if (post.length > 0) return res.status(400).json({ msg: "Bạn đã thích bài post." })
 
             const like = await Posts.findOneAndUpdate({ _id: req.params.id }, {
                 $push: { likes: req.user._id }
             }, { new: true })
 
-            if (!like) return res.status(400).json({ msg: 'This post does not exist.' })
+            if (!like) return res.status(400).json({ msg: 'Post này không tồn tại.' })
 
             res.json({ msg: 'Liked Post!' })
 
@@ -125,7 +134,7 @@ const postCtrl = {
                 $pull: { likes: req.user._id }
             }, { new: true })
 
-            if (!like) return res.status(400).json({ msg: 'This post does not exist.' })
+            if (!like) return res.status(400).json({ msg: 'Post này không tồn tại.' })
 
             res.json({ msg: 'UnLiked Post!' })
 
@@ -159,7 +168,7 @@ const postCtrl = {
                     }
                 })
 
-            if (!post) return res.status(400).json({ msg: 'This post does not exist.' })
+            if (!post) return res.status(400).json({ msg: 'Post này không tồn tại.' })
 
             res.json({
                 post
@@ -182,7 +191,7 @@ const postCtrl = {
             ])
 
             return res.json({
-                msg: 'Success!',
+                msg: 'Thành công!',
                 result: posts.length,
                 posts
             })
@@ -193,31 +202,24 @@ const postCtrl = {
     },
     deletePost: async (req, res) => {
         try {
-            // const post = await Posts.findOneAndDelete({ _id: req.params.id, user: req.user._id })
-            // await Comments.deleteMany({ _id: { $in: post.comments } })
 
-            // res.json({
-            //     msg: 'Deleted Post!',
-            //     newPost: {
-            //         ...post,
-            //         user: req.user
-            //     }
-            // })
             const post = await Posts.findOne({ _id: req.params.id })
             if (!post) {
-                return res.status(404).json({ msg: 'Post not found' })
+                return res.status(404).json({ msg: 'Không tìm thấy post' })
             }
 
             // Kiểm tra xem user có role "admin" hay không
-            if (req.user.role !== 'admin' && post.user !== req.user._id) {
-                return res.status(403).json({ msg: 'Access denied' })
-            }
+            // if (req.user.role !== 'admin') {
+            //     return res.status(403).json({ msg: 'Access denied' })
+            // }
 
             await Comments.deleteMany({ _id: { $in: post.comments } })
+            // await Report.deleteMany({ post: report.post });
+            await Report.deleteMany({ post: post._id });
             await post.remove()
 
             res.json({
-                msg: 'Deleted Post!',
+                msg: 'Xóa bài viết thành công!',
                 newPost: {
                     ...post,
                     user: req.user
@@ -233,15 +235,15 @@ const postCtrl = {
         try {
             //tìm id trong mảng saved, nếu nó trùng với id của thằng user._id thì sẽ trả về false, vì nó đã save post rồi
             const user = await Users.find({ _id: req.user._id, saved: req.params.id })
-            if (user.length > 0) return res.status(400).json({ msg: "You saved this post." })
+            if (user.length > 0) return res.status(400).json({ msg: "Đã lưu post." })
 
             const save = await Users.findOneAndUpdate({ _id: req.user._id }, {
                 $push: { saved: req.params.id }
             }, { new: true })
 
-            if (!save) return res.status(400).json({ msg: 'This user does not exist.' })
+            if (!save) return res.status(400).json({ msg: 'Người dùng này không tồn tại.' })
 
-            res.json({ msg: 'Saved Post!' })
+            res.json({ msg: 'Đã lưu Post!' })
 
         } catch (err) {
             return res.status(500).json({ msg: err.message })
@@ -253,9 +255,9 @@ const postCtrl = {
                 $pull: { saved: req.params.id }
             }, { new: true })
 
-            if (!save) return res.status(400).json({ msg: 'This user does not exist.' })
+            if (!save) return res.status(400).json({ msg: 'Người dùng này không tồn tại.' })
 
-            res.json({ msg: 'unSaved Post!' })
+            res.json({ msg: 'Bỏ lưu Post!' })
 
         } catch (err) {
             return res.status(500).json({ msg: err.message })

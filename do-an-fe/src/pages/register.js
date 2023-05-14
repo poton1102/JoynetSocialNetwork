@@ -38,7 +38,7 @@ const Register = () => {
                 <h3 className="text-uppercase text-center mb-4">Joynet</h3>
 
                 <div className="form-group">
-                    <label htmlFor="fullname">Full Name</label>
+                    <label htmlFor="fullname">Họ và tên</label>
                     <input type="text" className="form-control" id="fullname" name="fullname"
                         onChange={handleChangeInput} value={fullname}
                         style={{ background: `${alert.fullname ? '#fd2d6a14' : ''}` }} />
@@ -49,7 +49,7 @@ const Register = () => {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="username">User Name</label>
+                    <label htmlFor="username">Tên user</label>
                     <input type="text" className="form-control" id="username" name="username"
                         onChange={handleChangeInput} value={username.toLowerCase().replace(/ /g, '')}
                         style={{ background: `${alert.username ? '#fd2d6a14' : ''}` }} />
@@ -60,7 +60,7 @@ const Register = () => {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="exampleInputEmail1">Email address</label>
+                    <label htmlFor="exampleInputEmail1">Địa chỉ email</label>
                     <input type="email" className="form-control" id="exampleInputEmail1" name="email"
                         onChange={handleChangeInput} value={email}
                         style={{ background: `${alert.email ? '#fd2d6a14' : ''}` }} />
@@ -71,7 +71,7 @@ const Register = () => {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="exampleInputPassword1">Password</label>
+                    <label htmlFor="exampleInputPassword1">Mật khẩu</label>
 
                     <div className="pass">
 
@@ -91,7 +91,7 @@ const Register = () => {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="cf_password">Confirm Password</label>
+                    <label htmlFor="cf_password">Xác nhận mật khẩu</label>
 
                     <div className="pass">
 
@@ -112,27 +112,27 @@ const Register = () => {
 
                 <div className="row justify-content-between mx-0 mb-1">
                     <label htmlFor="male">
-                        Male: <input type="radio" id="male" name="gender"
+                        Nam: <input type="radio" id="male" name="gender"
                             value="male" defaultChecked onChange={handleChangeInput} />
                     </label>
 
                     <label htmlFor="female">
-                        Female: <input type="radio" id="female" name="gender"
+                        Nữ: <input type="radio" id="female" name="gender"
                             value="female" onChange={handleChangeInput} />
                     </label>
 
                     <label htmlFor="other">
-                        Other: <input type="radio" id="other" name="gender"
+                        Khác: <input type="radio" id="other" name="gender"
                             value="other" onChange={handleChangeInput} />
                     </label>
                 </div>
 
-                <button type="submit" className="btn btn-dark w-100">
-                    Register
+                <button type="submit" className="btn btn-dark w-100 bg-primary">
+                    Đăng ký
                 </button>
 
                 <p className="my-2">
-                    Already have an account? <Link to="/" style={{ color: "0066ff" }}>Login Now</Link>
+                    Bạn đã có tài khoản? <Link to="/" style={{ color: "0066ff" }}>Đăng nhập ngay</Link>
                 </p>
             </form>
         </div>

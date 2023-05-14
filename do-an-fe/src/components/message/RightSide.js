@@ -170,7 +170,7 @@ function RightSide() {
         }
     }
 
-    //call
+
     // Call
     const caller = ({ video }) => {
         const { _id, avatar, username, fullname } = user
@@ -191,7 +191,7 @@ function RightSide() {
             recipient: user._id,
             avatar, username, fullname, video
         }
-
+        // dispatch({ type: GLOBALTYPES.CALL, payload: msg })
         if (peer.open) msg.peerId = peer._id
 
         socket.emit('callUser', msg)

@@ -29,13 +29,13 @@ function CommentDisplay({ comment, post, replyCm }) {
                         replyCm.length - next > 0
                             ? <div style={{ cursor: 'pointer', color: '#0066ff' }}
                                 onClick={() => setNext(next + 10)}>
-                                See more comments...
+                                Hiện thêm bình luận...
                             </div>
 
                             : replyCm.length > 1 &&
                             <div style={{ cursor: 'pointer', color: '#0066ff' }}
                                 onClick={() => setNext(1)}>
-                                Hide comments...
+                                Ẩn bình luận...
                             </div>
                     }
                 </div>

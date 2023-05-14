@@ -116,7 +116,7 @@ function CommentCard({ children, comment, post, commentId }) {
                         </small>
 
                         <small className="font-weight-bold mr-3">
-                            {comment.likes.length} likes
+                            {comment.likes.length} thích
                         </small>
 
                         {
@@ -124,11 +124,11 @@ function CommentCard({ children, comment, post, commentId }) {
                                 ? <>
                                     <small className="font-weight-bold mr-3"
                                         onClick={handleUpdate}>
-                                        update
+                                        cập nhật
                                     </small>
                                     <small className="font-weight-bold mr-3"
                                         onClick={() => setOnEdit(false)}>
-                                        cancel
+                                        hủy bỏ
                                     </small>
                                 </>
 
@@ -136,7 +136,7 @@ function CommentCard({ children, comment, post, commentId }) {
 
                                 <small className="font-weight-bold mr-3"
                                     onClick={handleReply}>
-                                    {onReply ? 'cancel' : 'reply'}
+                                    {onReply ? 'hủy bỏ' : 'phản hồi'}
                                 </small>
                         }
 

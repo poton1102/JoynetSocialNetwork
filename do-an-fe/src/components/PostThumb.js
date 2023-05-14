@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 function PostThumb({ posts, result }) {
     const { theme } = useSelector(state => state)
-    if (result === 0) return <h2 className="text-center" style={{ color: "#0066ff" }}>No Post</h2>
+    if (result === 0) return <h2 className="text-center" style={{ color: "#0066ff" }}>Không có bài viết</h2>
     return (
         <div className="post_thumb">
             {

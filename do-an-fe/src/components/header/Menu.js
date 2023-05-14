@@ -18,6 +18,7 @@ const Menu = () => {
 
     if (auth.user.role === 'admin') {
         navLinks.unshift({ label: 'Reports', icon: 'report', path: '/reports' })
+        // navLinks.unshift({ label: 'User management', icon: 'manage', path: '/usersmanage' })
     }
 
     const dispatch = useDispatch()

@@ -37,7 +37,7 @@ const InputComment = ({ children, post, onReply, setOnReply }) => {
         <form className="card-footer comment_input" onSubmit={handleSubmit}>
             {children}
 
-            <input type="text" placeholder="Add your comments..."
+            <input type="text" placeholder="Bình luận..."
                 value={content}
                 onChange={e => setContent(e.target.value)}
                 style={{
@@ -49,7 +49,7 @@ const InputComment = ({ children, post, onReply, setOnReply }) => {
             <Icons setContent={setContent} content={content} theme={theme} />
 
             <button type="submit" className="postBtn">
-                Post
+                Đăng
             </button>
         </form>
     )

@@ -9,7 +9,7 @@ const adminCtrl = {
             const reports = await Report.find().populate('post').populate('user reporter')
 
             res.json({
-                msg: 'Success!',
+                // msg: 'Success!',
                 result: reports.length,
                 reports
             })

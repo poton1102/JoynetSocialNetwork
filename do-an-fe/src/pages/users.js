@@ -28,7 +28,9 @@ function Report() {
 
     return (
         <div className='mt-70'>
-            <h1 className='text-center123 text-justify'>Báo cáo các bài viết</h1>
+            <div className='text-center123'>
+                <h1>Báo cáo các bài viết</h1>
+            </div>
 
             <div style={{ overflowX: "auto" }}>
                 <table className="customers">

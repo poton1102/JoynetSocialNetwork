@@ -61,10 +61,10 @@ const CardHeader = ({ post }) => {
                         (auth.user._id === post.user._id || auth.user.role === 'admin') &&
                         <>
                             <div className="dropdown-item" onClick={handleEditPost}>
-                                <span className="material-icons">create</span> Edit Post
+                                <span className="material-icons">create</span> Sửa bài viết
                             </div>
                             <div className="dropdown-item" onClick={handleDeletePost} >
-                                <span className="material-icons">delete_outline</span> Remove Post
+                                <span className="material-icons">delete_outline</span> Xóa bài viết
                             </div>
 
                         </>
@@ -76,11 +76,12 @@ const CardHeader = ({ post }) => {
 
                     </div>
                     {
-                        auth.user.role !== 'admin' &&
+                        (auth.user.role !== 'admin' && auth.user._id !== post.user._id) &&
                         <div className="dropdown-item" onClick={() => setOnReport(true)}>
-                            <span className="material-icons">flag</span> Report
+                            <span className="material-icons">flag</span> Báo cáo
                         </div>
                     }
+
 
                 </div>
             </div>

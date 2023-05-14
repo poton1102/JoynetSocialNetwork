@@ -17,10 +17,10 @@ function CommentMenu({ post, comment, setOnEdit }) {
         return (
             <>
                 <div className="dropdown-item" onClick={() => setOnEdit(true)} >
-                    <span className="material-icons">create</span> Edit
+                    <span className="material-icons">create</span> Sửa
                 </div>
                 <div className="dropdown-item" onClick={handleRemove}>
-                    <span className="material-icons">delete_outline</span> Remove
+                    <span className="material-icons">delete_outline</span> Xóa
                 </div>
             </>
         )
@@ -41,7 +41,7 @@ function CommentMenu({ post, comment, setOnEdit }) {
                                 ? comment.user._id === auth.user._id
                                     ? MenuItem()
                                     : <div className="dropdown-item" onClick={handleRemove}>
-                                        <span className="material-icons">delete_outline</span> Remove
+                                        <span className="material-icons">delete_outline</span> Xóa
                                     </div>
                                 : comment.user._id === auth.user._id && MenuItem()
                         }

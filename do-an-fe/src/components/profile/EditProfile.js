@@ -45,7 +45,7 @@ function EditProfile({ setOnEdit }) {
         <div className="edit_profile mt-70" onSubmit={handleSubmit}>
             <button className="btn btn-danger btn_close"
                 onClick={() => setOnEdit(false)}>
-                Close
+                Đóng
             </button>
 
             <form >
