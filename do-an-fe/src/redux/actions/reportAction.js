@@ -66,15 +66,26 @@ export const deleteReport = ({ reportId, auth, socket }) => async (dispatch) => 
         const res = await getDataAPI('reports', auth.token);
         dispatch({ type: REPORT_TYPES.GET_ALL_REPORT, payload: { ...res.data } })
 
-        // console.log(res)
+
         // Notify
         const msg = {
-            id: reportId,
-            text: 'đã xóa bài viết của bạn vì vi phạm.',
+            id: res.data.newPost._id,
+            text: 'added a new post.',
             recipients: res.data.newPost.user.followers,
-            url: `/post/${reportId}`,
+            url: `/post/${}`,
+
         }
+
         dispatch(createNotify({ msg, auth, socket }))
+        // console.log(res)
+        // Notify
+        // const msg = {
+        //     id: reportId,
+        //     text: 'đã xóa bài viết của bạn vì vi phạm.',
+        //     // recipients: res.data.newPost.user.followers,
+        //     url: `/post/${reportId}`,
+        // }
+        // dispatch(createNotify({ msg, auth, socket }))
         // dispatch(removeNotify({ msg, auth, socket }))
         // Notify
         // const msg = {
