@@ -14,9 +14,9 @@ function Report() {
         // }
     }, [dispatch, auth.token])
 
-    const handleDeleteReport = (reportId) => {
+    const handleDeleteReport = (report) => {
         if (window.confirm('Do you want to delete?')) {
-            dispatch(deleteReport({ reportId, auth, socket }))
+            dispatch(deleteReport({ report, auth, socket }))
         }
     }
     // console.log(report.reports)
