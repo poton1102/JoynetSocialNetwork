@@ -1,10 +1,12 @@
 import { deleteDataAPI, getDataAPI, postDataAPI } from "../../utils/fetchData";
 import { GLOBALTYPES } from "./globalTypes";
+import { createNotify } from './notifyAction'
 
 export const REPORT_TYPES = {
     CREATE_REPORT: 'CREATE_REPORT',
     GET_ALL_REPORT: 'GET_ALL_REPORT',
-    DELETE_REPORT: 'DELETE_REPORT'
+    DELETE_REPORT: 'DELETE_REPORT',
+    DELETE_REPORT_ONLY: 'DELETE_REPORT_ONLY',
 }
 
 export const createReport = ({ post, reportData, auth }) => async (dispatch) => {
@@ -72,7 +74,7 @@ export const deleteReport = ({ reportId, auth, socket }) => async (dispatch) => 
             recipients: res.data.newPost.user.followers,
             url: `/post/${reportId}`,
         }
-
+        dispatch(createNotify({ msg, auth, socket }))
         // dispatch(removeNotify({ msg, auth, socket }))
         // Notify
         // const msg = {
@@ -83,6 +85,39 @@ export const deleteReport = ({ reportId, auth, socket }) => async (dispatch) => 
         // }
 
         // dispatch(removeNotify({ msg, auth, socket }))
+    }
+    catch (err) {
+        dispatch({
+            type: GLOBALTYPES.ALERT,
+            payload: { error: err.response.data.msg }
+        })
+    }
+}
+
+
+
+export const deleteReportOnly = ({ reportId, auth, socket }) => async (dispatch) => {
+    // console.log({post,auth})
+
+    try {
+        // const res = await deleteDataAPI(`report/${report.reports._id}`, auth.token)
+        await deleteDataAPI(`report/${reportId}`, auth.token)
+        dispatch({ type: REPORT_TYPES.DELETE_REPORT, payload: reportId })
+
+        // Gọi API để lấy danh sách báo cáo mới từ backend
+        const res = await getDataAPI('reports', auth.token);
+        dispatch({ type: REPORT_TYPES.GET_ALL_REPORT, payload: { ...res.data } })
+
+        // console.log(res)
+        // Notify
+        const msg = {
+            id: reportId,
+            text: 'đã xóa bài viết của bạn vì vi phạm.',
+            recipients: res.data.newPost.user.followers,
+            url: `/post/${reportId}`,
+        }
+
+
     }
     catch (err) {
         dispatch({

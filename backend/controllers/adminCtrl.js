@@ -76,7 +76,23 @@ const adminCtrl = {
         } catch (err) {
             return res.status(500).json({ msg: err.message });
         }
-    }
+    },
 
+    deleteReportOnly: async (req, res) => {
+        try {
+            const report = await Report.findOneAndDelete({ _id: req.params.id });
+            if (!report) {
+                return res.status(404).json({ msg: 'Report not found' });
+            }
+
+            await Report.deleteMany({ post: report.post });
+
+            res.json({
+                msg: 'Xóa báo cáo thành công!'
+            });
+        } catch (err) {
+            return res.status(500).json({ msg: err.message });
+        }
+    }
 }
 module.exports = adminCtrl

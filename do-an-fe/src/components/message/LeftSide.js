@@ -1,61 +1,66 @@
-import { useEffect, useRef, useState } from "react";
-import UserCard from '../UserCard'
-import { useDispatch, useSelector } from "react-redux";
-import { GLOBALTYPES } from "../../redux/actions/globalTypes";
-import { getDataAPI } from "../../utils/fetchData";
-import { useHistory, useParams } from "react-router-dom";
-import { MESS_TYPES, addUser, getConversations } from "../../redux/actions/messageAction";
+import SearchIcon from '@mui/icons-material/Search'
+import {
+    Avatar,
+    Badge,
+    Box, Divider, Drawer,
+    List,
+    ListItemAvatar,
+    ListItemButton,
+    ListItemText,
+    Stack, Typography, useTheme
+} from '@mui/material'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import useDebounce from '../../hooks/useDebounce'
+import { GLOBALTYPES } from '../../redux/actions/globalTypes'
+import { MESS_TYPES, accessChat, getConversations } from '../../redux/actions/messageAction'
+import { getSenderFull } from '../../utils/chatLogic'
+import { getDataAPI } from '../../utils/fetchData'
+import {
+    SearchIconWrapper,
+    SearchMaterial,
+    StyledInputBase
+} from '../Search'
+import { SmallAvatar, StyledBadge } from '../StyleBadge'
+import GroupChat from './GroupChat'
+import UserItem from '../UserItem'
 
-function LeftSide() {
+const LeftSide = () => {
     const { auth, message, online } = useSelector(state => state)
     const dispatch = useDispatch()
+    const { palette } = useTheme()
+
     const [search, setSearch] = useState('')
-    const [searchUsers, setSearchUser] = useState([])
-    const history = useHistory()
+    const searchDebounce = useDebounce(search, 500)
 
-    const { id } = useParams()
+    const [searchUsers, setSearchUsers] = useState([])
 
-    const pageEnd = useRef()
-    const [page, setPage] = useState(0)
+    const [load, setLoad] = useState(false)
+    const [openDrawer, setOpenDrawer] = useState(false)
 
-    //hiện ra mảng ds user sau khi search
-    const handleSearch = async (e) => {
-        e.preventDefault()
+    const [messengerRef, setMessengerRef] = useState()
+    const [page, setPage] = useState(1)
 
-        if (!search) return setSearchUser([]);
-
+    const handleSearch = async (searchDebounce) => {
         try {
-            const res = await getDataAPI(`search?username=${search}`, auth.token)
-            setSearchUser(res.data.users)
-
+            setLoad(true)
+            const res = await getDataAPI(`search?username=${searchDebounce}`, auth.token)
+            setSearchUsers(res.data.users)
         } catch (err) {
             dispatch({
                 type: GLOBALTYPES.ALERT, payload: { error: err.response.data.msg }
             })
         }
-    }
-    //nếu chọn 1 thằng thì sẽ reset lại cả mảng user sau khi search để tìm thằng khác
-    const handleAddUser = (user) => {
-        // console.log(user)
-        setSearch('')
-        setSearchUser([])
-        dispatch({ type: MESS_TYPES.ADD_USER, payload: { ...user, text: '', media: [] } })
-        return history.push(`/message/${user._id}`)
+        setLoad(false)
     }
 
-    const isActive = (user) => {
-        if (id === user._id) {
-            return 'active'
+    const handleCloseDrawer = (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
         }
-        return ''
+        setOpenDrawer(!openDrawer)
     }
-    //
-    useEffect(() => {
-        if (message.firstLoad) return;
-        dispatch(getConversations({ auth }));
-    }, [dispatch, auth, message.firstLoad])
 
-    //load more, kiểu kéo lên thì +1
     useEffect(() => {
         const observer = new IntersectionObserver(entries => {
             if (entries[0].isIntersecting) {
@@ -65,67 +70,114 @@ function LeftSide() {
             threshold: 0.1
         })
 
-        observer.observe(pageEnd.current)
-    }, [setPage])
+        if (messengerRef) observer.observe(messengerRef)
+
+        return () => {
+            observer.disconnect()
+        }
+    }, [messengerRef])
 
     useEffect(() => {
-        if (message.resultUsers >= (page - 1) * 9 && page > 1) {
+        if (message.chatsLength >= (page - 1) * 9) {
             dispatch(getConversations({ auth, page }))
         }
-    }, [message.resultUsers, page, auth, dispatch])
+    }, [dispatch, auth, page, message.chatsLength])
 
-    //check user online-offline
     useEffect(() => {
-        if (message.firstLoad) dispatch({ type: MESS_TYPES.CHECK_ONLINE_OFFLINE, payload: online })
-    }, [online, message.firstLoad, dispatch])
-
+        if (searchDebounce) {
+            handleSearch(searchDebounce)
+        } else {
+            setSearchUsers([])
+        }
+        // eslint-disable-next-line
+    }, [searchDebounce, auth.token, dispatch])
 
     return (
         <>
-            <form className="message_header" onSubmit={handleSearch} >
-                <input type="text" value={search}
-                    placeholder="Tìm kiếm..."
-                    onChange={e => setSearch(e.target.value)} />
-
-                <button type="submit" style={{ display: 'none' }}>Search</button>
-            </form>
-            <div className="message_chat_list">
-                {
-                    searchUsers.length !== 0
-                        ?
-                        <>
-                            {
-                                searchUsers.map(user => (
-                                    <div key={user._id} className={`message_user ${isActive(user)}`} onClick={() => handleAddUser(user)}>
-                                        <UserCard user={user} />
-                                    </div>
-
-                                ))
+            <Box sx={{ py: 2, px: 1 }}>
+                <Stack direction='row' spacing={2}>
+                    <Stack direction='row' alignItems='center' spacing={1} sx={{ py: 1, px: 2, borderRadius: 4, boxShadow: 2, cursor: 'pointer', background: '#fff', flex: 1, '&:hover': { opacity: 0.6 } }} onClick={() => setOpenDrawer(!openDrawer)}>
+                        <SearchIcon />
+                        <Typography component='span' variant='h6'>Search Messenger</Typography>
+                    </Stack>
+                    <GroupChat />
+                </Stack>
+                <Drawer
+                    anchor='left'
+                    open={openDrawer}
+                    onClose={handleCloseDrawer}
+                >
+                    <Box sx={{ py: 2, px: 1 }}>
+                        <SearchMaterial>
+                            <SearchIconWrapper>
+                                <SearchIcon />
+                            </SearchIconWrapper>
+                            <StyledInputBase
+                                placeholder="Search…"
+                                onChange={e => setSearch(e.target.value.toLowerCase().replace(/ /g, ''))}
+                            />
+                            {load &&
+                                <Box className='dots-7' sx={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)' }}>Loading...</Box>
                             }
-
-                        </> : <>
-                            {/* lẩy ra mảng ds đã được add khi mảng ds user sau khi search bằng 0*/}
-                            {
-                                message.users.map(user => (
-                                    <div key={user._id} className={`message_user ${isActive(user)}`} onClick={() => handleAddUser(user)}>
-                                        <UserCard user={user} msg={true}>
-                                            {
-                                                user.online ? <i className="fas fa-circle text-success" /> :
-                                                    auth.user.following.find(item => item._id === user._id) && <i className="fas fa-circle" />
-                                            }
-
-                                        </UserCard>
-                                    </div>
-                                ))
-                            }
-                        </>
-
+                        </SearchMaterial>
+                    </Box>
+                    <Divider />
+                    {searchUsers.length > 0 &&
+                        <List>
+                            {searchUsers.map(user => (
+                                user._id !== auth.user._id ?
+                                    <UserItem key={user._id} user={user} onClick={() => dispatch(accessChat({ userId: user._id, auth }))} />
+                                    : null
+                            ))}
+                        </List>
+                    }
+                </Drawer>
+            </Box>
+            <Divider />
+            <List>
+                {message.chats.map((chat, index) => {
+                    const user = !chat.isGroupChat && getSenderFull(auth.user, chat.users)
+                    return (
+                        <ListItemButton key={chat._id}
+                            sx={{
+                                bgcolor: message.selectedChat?._id === chat._id && 'blue', '&:hover': {
+                                    bgcolor: 'blue'
+                                }
+                            }}
+                            ref={index === message.chats.length - 1 ? setMessengerRef : null}
+                            onClick={() => dispatch({ type: MESS_TYPES.SET_SELECTED_CHAT, payload: chat })}
+                        >
+                            <ListItemAvatar>
+                                {!chat.isGroupChat ?
+                                    <StyledBadge
+                                        overlap="circular"
+                                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                        variant={online.includes(user._id) ? 'dot' : ''}
+                                    >
+                                        <Avatar src={user.avatar} />
+                                    </StyledBadge> :
+                                    <Badge
+                                        overlap="circular"
+                                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                        badgeContent={
+                                            <SmallAvatar src={chat.users[0].avatar} />
+                                        }
+                                    >
+                                        <Avatar src={chat?.users[1]?.avatar} />
+                                    </Badge>
+                                }
+                            </ListItemAvatar>
+                            <ListItemText
+                                primary={user ? user.username : chat.chatName} secondary={chat.latestMessage ? `${chat.latestMessage.sender.username} : ${chat.latestMessage.content.length > 50 ? chat.latestMessage.content.substring(0, 51) + "..." : chat.latestMessage.content}` : null}
+                            />
+                        </ListItemButton>
+                    )
                 }
-                <button ref={pageEnd} style={{ opacity: 0 }} >Load More</button>
-
-            </div>
+                )}
+            </List>
         </>
-    );
+    )
 }
 
-export default LeftSide;
+
+export default LeftSide

@@ -1,317 +1,238 @@
-import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { GLOBALTYPES } from "../../redux/actions/globalTypes";
-import { imageShow, videoShow } from "../../utils/mediaShow";
-import UserCard from "../UserCard";
-import MsgDisplay from "./MsgDisplay";
+import SentimentVerySatisfiedOutlinedIcon from '@mui/icons-material/SentimentVerySatisfiedOutlined'
+import {
+    Avatar,
+    Badge,
+    Box,
+    IconButton,
+    Popper,
+    Skeleton,
+    Stack,
+    Typography
+} from '@mui/material'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { GLOBALTYPES } from '../../redux/actions/globalTypes'
+import { getSenderFull } from '../../utils/chatLogic'
+import { getDataAPI, postDataAPI } from '../../utils/fetchData'
 import Icons from '../Icons'
-import { imageUpload } from '../../utils/imageUpload'
-import { addMessage, deleteConversation, getMessages, loadMoreMessages, MESS_TYPES } from "../../redux/actions/messageAction";
-import LoadIcon from '../../images/loading.gif'
-import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
-function RightSide() {
-    const { auth, message, theme, socket, peer } = useSelector(state => state)
+import { SmallAvatar, StyledBadge } from '../StyleBadge'
+import UserCardSkeleton from '../skeleton/UserCard'
+import ScrollableChat from './ScrollableChat'
+import UpdateGroupChat from './UpdateGroupChat'
+import useIntersectionObserver from '../../hooks/useIntersectionObserver'
+
+
+const RightSide = () => {
+    const { auth, message, theme, socket, online, peer } = useSelector(state => state)
     const dispatch = useDispatch()
 
-    const { id } = useParams()
-    const [user, setUser] = useState([])
     const [text, setText] = useState('')
-    const [media, setMedia] = useState([])
-    const [loadMedia, setLoadMedia] = useState(false)
 
-    const refDisplay = useRef()
-    const pageEnd = useRef()
+    const [messages, setMessages] = useState([])
+    const [hasMoreMessages, setHasMoreMessages] = useState(true);
+    const [firstLoadMessage, setFirstLoadMessage] = useState(true)
+    const [messagesLength, setMessagesLength] = useState(0)
+    const [page, setPage] = useState(1)
 
-    const [data, setData] = useState([])
-    const [result, setResult] = useState(9)
-    const [page, setPage] = useState(0)
-    const [isLoadMore, setIsLoadMore] = useState(0)
+    const [socketConnected, setSocketConnected] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [typing, setTyping] = useState(false);
+    const [istyping, setIsTyping] = useState(false);
 
-    const history = useHistory()
-
-
-    useEffect(() => {
-        // const newData = message.data.filter(item => item.sender === auth.user._id || item.sender === id)
-        const newData = message.data.find(item => item._id === id)
-        // console.log(newData)
-        if (newData) {
-            setData(newData.messages)
-            setResult(newData.result)
-            setPage(newData.page)
-        }
-    }, [message.data, id])
-
-    //tự động trượt xuống dưới khi có chat mới
-    // if (refDisplay.current) {
-    //     refDisplay.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
-
-    // }
-
-    //user đã được add vào trong list chat, sẽ check id đường dẫn với user._id,để đổi box chat
-    useEffect(() => {
-        if (id && message.users.length > 0) {
-            setTimeout(() => {
-                refDisplay.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
-            }, 50)
-
-            const newUser = message.users.find(user => user._id === id)
-            if (newUser) {
-                setUser(newUser)
-                setPage(1)
-            }
-        }
-
-    }, [message.users, id])
-
-    const handleChangeMedia = async (e) => {
-        const files = [...e.target.files]
-        let err = ""
-        let newMedia = []
-
-        files.forEach(file => {
-            if (!file) return err = "File does not exist."
-
-            if (file.size > 1024 * 1024 * 5) {
-                return err = "The image/video largest is 5mb."
-            }
-
-            return newMedia.push(file)
-        })
-
-        if (err) dispatch({ type: GLOBALTYPES.ALERT, payload: { error: err } })
-        setMedia([...media, ...newMedia])
-    }
-
-    const handleDeleteMedia = (index) => {
-        const newArr = [...media]
-        newArr.splice(index, 1)
-        setMedia(newArr)
-    }
+    const [emojiRefEl, setEmojiRefEl] = useState(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        if (!text.trim() && media.length === 0) return;
-        setText('')
-        setMedia([])
-        setLoadMedia(true)
-
-        let newArr = []
-        if (media.length > 0) {
-            newArr = await imageUpload(media)
+        socket.emit("stop typing", message.selectedChat._id);
+        try {
+            const { data } = await postDataAPI(
+                "message",
+                {
+                    content: text,
+                    chatId: message.selectedChat,
+                },
+                auth.token
+            );
+            socket.emit("new message", data);
+            setText('')
+            setMessages([...messages, data]);
+            setMessagesLength(prevLength => prevLength + 1)
+        } catch (error) {
+            dispatch({ type: GLOBALTYPES.ALERT, payload: { error: error.msg } })
         }
-        //
-        const msg = {
-            sender: auth.user._id,
-            recipient: id,
-            text,
-            media: newArr,
-            createdAt: new Date().toISOString()
-        }
-        setLoadMedia(false)
-        await dispatch(addMessage({ msg, auth, socket }))
-
-        if (refDisplay.current) {
-            refDisplay.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
-        }
-
     }
 
-    useEffect(() => {
-        const getMessagesData = async () => {
-            if (message.data.every(item => item._id !== id)) {
-                await dispatch(getMessages({ auth, id }))
-                //tự động trượt trang khi có message mới
-                setTimeout(() => {
-                    refDisplay.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
-                }, 50)
-            }
+    const fetchMessages = async (firstLoad = false) => {
+        if (!message.selectedChat) return;
+        if (!hasMoreMessages) return;
 
+        try {
+            if (firstLoad) setLoading(true);
+
+            const { data } = await getDataAPI(`message/${message.selectedChat._id}?page=${page}&limit=14`, auth.token)
+
+            setMessages(prevMessages => {
+                const newMessages = [...data.messages, ...prevMessages]
+                if (data.messages.length === 0) setHasMoreMessages(false)
+                setMessagesLength(newMessages.length)
+                return newMessages
+            });
+
+            // setPage(prevPage => prevPage + 1)
+            // setFirstLoadMessage(false)
+            socket.emit("join chat", message.selectedChat._id);
+        } catch (error) {
+            dispatch({ type: GLOBALTYPES.ALERT, payload: { error: error.msg } })
         }
-        getMessagesData()
-    }, [id, dispatch, auth])
+        setLoading(false);
+    };
 
-    //load more, kiểu kéo lên thì +1
-    useEffect(() => {
-        const observer = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting) {
-                setIsLoadMore(p => p + 1)
-            }
-        }, {
-            threshold: 0.1
-        })
+    const typingHandler = (e) => {
+        setText(e.target.value)
 
-        observer.observe(pageEnd.current)
-    }, [setIsLoadMore])
+        if (!socketConnected) return;
 
-    useEffect(() => {
-        if (isLoadMore > 1) {
-            if (message.resultData >= (page - 1) * 9 && page > 1) {
-                dispatch(getMessages({ auth, id, page }))
-            }
+        if (!typing) {
+            setTyping(true);
+            socket.emit("typing", message.selectedChat._id);
         }
+        let lastTypingTime = new Date().getTime();
+        var timerLength = 3000;
+        setTimeout(() => {
+            var timeNow = new Date().getTime();
+            var timeDiff = timeNow - lastTypingTime;
+            if (timeDiff >= timerLength && typing) {
+                socket.emit("stop typing", message.selectedChat._id);
+                setTyping(false);
+            }
+        }, timerLength);
+    }
 
-    }, [message.resultData, page, id, auth, dispatch])
+    const fetchMoreRef = useIntersectionObserver(() => setPage(prevPage => prevPage + 1));
 
     useEffect(() => {
-        if (isLoadMore > 1) {
-            if (result >= page * 9) {
-                dispatch(loadMoreMessages({ auth, id, page: page + 1 }))
-                setIsLoadMore(1)
-            }
-        }
+        if (page > 1) fetchMessages()
         // eslint-disable-next-line
-    }, [isLoadMore])
+    }, [page])
 
-    const handleDeleteConversation = () => {
-        if (window.confirm('Do you want to delete?')) {
-            dispatch(deleteConversation({ auth, id }))
-            return history.push('/message')
-        }
-    }
+    useEffect(() => {
+        // setFirstLoadMessage(true)
+        // setPage(1)
+        // setMessages([])
+        // setMessagesLength(0)
+        fetchMessages(true)
+        // eslint-disable-next-line
+    }, [message.selectedChat])
 
 
-    // Call
-    const caller = ({ video }) => {
-        const { _id, avatar, username, fullname } = user
+    // useEffect(() => {
+    //     const observer = new IntersectionObserver(entries => {
+    //         if (entries[0].isIntersecting) {
+    //             setPage(p => p + 1)
+    //         }
+    //     }, {
+    //         threshold: 0.1
+    //     })
 
-        const msg = {
-            sender: auth.user._id,
-            recipient: _id,
-            avatar, username, fullname, video
-        }
-        dispatch({ type: GLOBALTYPES.CALL, payload: msg })
-    }
+    //     if (messageRef) observer.observe(messageRef)
 
-    const callUser = ({ video }) => {
-        const { _id, avatar, username, fullname } = auth.user
+    //     return () => {
+    //         observer.disconnect()
+    //     }
+    // }, [messageRef])
 
-        const msg = {
-            sender: _id,
-            recipient: user._id,
-            avatar, username, fullname, video
-        }
-        // dispatch({ type: GLOBALTYPES.CALL, payload: msg })
-        if (peer.open) msg.peerId = peer._id
+    // useEffect(() => {
+    //     if ((messagesLength >= (page - 1) * 9 && page > 1) || firstLoadMessage) fetchMessages()
+    //     // eslint-disable-next-line
+    // }, [page, firstLoadMessage])
 
-        socket.emit('callUser', msg)
-    }
+    useEffect(() => {
+        socket.emit("setup", auth.user);
 
-    const handleAudioCall = () => {
-        caller({ video: false })
-        callUser({ video: false })
-    }
+        socket.on("connected", () => setSocketConnected(true));
+        socket.on("typing", () => setIsTyping(true));
+        socket.on("stop typing", () => setIsTyping(false));
 
-    const handleVideoCall = () => {
-        caller({ video: true })
-        callUser({ video: true })
-    }
+        socket.on("message recieved", (newMessageRecieved) => setMessages([...messages, newMessageRecieved]));
+        // eslint-disable-next-line
+    }, [socket, messages]);
+
     return (
-        <>
-            <div className="message_header">
-                {
-                    user.length !== 0 &&
-                    <UserCard user={user}>
-                        <div>
-                            <i className="fas fa-phone-alt"
-                                onClick={handleAudioCall}
-                            />
-
-                            <i className="fas fa-video mx-3"
-                                onClick={handleVideoCall}
-                            />
-
-                            <i className="fas fa-trash text-danger"
-                                onClick={handleDeleteConversation}
-                            />
-                        </div>
-                    </UserCard>
+        <Box sx={{ flex: 1 }}>
+            <div className="message_header" style={{ cursor: 'pointer' }} >
+                {(loading) ?
+                    <UserCardSkeleton primaryWidth='150px' secondaryWidth='100px' /> : <>
+                        {!message.selectedChat.isGroupChat ?
+                            <Stack ml={2} direction='row' spacing={2} alignItems='center'>
+                                <StyledBadge
+                                    overlap="circular"
+                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                    variant={online.includes(getSenderFull(auth.user, message.selectedChat.users).avatar) ? 'dot' : ''}
+                                >
+                                    <Avatar src={getSenderFull(auth.user, message.selectedChat.users).avatar} />
+                                </StyledBadge>
+                                <Typography component='span'>{getSenderFull(auth.user, message.selectedChat.users).username}</Typography>
+                            </Stack>
+                            :
+                            <Stack direction='row' justifyContent="space-between" alignItems='center' sx={{ width: '100%', px: 2 }}>
+                                <Badge
+                                    overlap="circular"
+                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                    badgeContent={
+                                        <SmallAvatar src={message.selectedChat.users[0].avatar} />
+                                    }
+                                >
+                                    <Avatar src={message.selectedChat?.users[1]?.avatar} />
+                                </Badge>
+                                <UpdateGroupChat />
+                            </Stack>
+                        }
+                    </>
                 }
-
             </div>
 
-            <div className="chat_container"
-                style={{ height: media.length > 0 ? 'calc(100% - 180px)' : '' }}
-            >
-                <div className="chat_display" ref={refDisplay}>
-
-                    <button style={{ marginTop: '-25px', opacity: 0 }} ref={pageEnd}>
-                        Load more
-                    </button>
-
-                    {
-                        data.map((msg, index) => (
-                            <div key={index}>
-                                {
-                                    msg.sender !== auth.user._id &&
-                                    <div className="chat_row other_message">
-                                        <MsgDisplay user={user} msg={msg} theme={theme} />
-                                    </div>
-                                }
-
-                                {
-                                    msg.sender === auth.user._id &&
-                                    <div className="chat_row you_message">
-                                        <MsgDisplay user={auth.user} msg={msg} theme={theme} data={data} />
-                                    </div>
-                                }
-                            </div>
-                        ))
+            <div className="chat_container">
+                <div className="chat_display">
+                    {(loading) ? <>
+                        {Array.from({ length: 25 }).map((_, i) => (<Skeleton key={i} />))}
+                    </> :
+                        <ScrollableChat messages={messages} istyping={istyping} fetchMoreRef={fetchMoreRef} hasMoreMessages={hasMoreMessages} />
                     }
-
-                    {
-                        loadMedia &&
-                        <div className="chat_row other_message">
-                            <img src={LoadIcon} alt="loading" />
-                        </div>
-                    }
-
-
                 </div>
-
-            </div>
-            <div className="show_media" style={{ display: media.length > 0 ? 'grid' : 'none' }} >
-                {
-                    media.map((item, index) => (
-                        <div key={index} id="file_media">
-                            {
-                                item.type.match(/video/i)
-                                    ? videoShow(URL.createObjectURL(item), theme)
-                                    : imageShow(URL.createObjectURL(item), theme)
-                            }
-                            <span onClick={() => handleDeleteMedia(index)} >&times;</span>
-                        </div>
-                    ))
-                }
-
             </div>
 
-            <form className="chat_input" onSubmit={handleSubmit}>
+            <form className="chat_input" onSubmit={handleSubmit} >
                 <input type="text" placeholder="Enter you message..."
-                    value={text} onChange={e => setText(e.target.value)}
+                    value={text} onChange={typingHandler}
                     style={{
                         filter: theme ? 'invert(1)' : 'invert(0)',
                         background: theme ? '#040404' : '',
                         color: theme ? 'white' : ''
-                    }}
-                />
-                <Icons setContent={setText} content={text} theme={theme} />
+                    }} />
 
-
-                <div className="file_upload">
-                    <i className="fas fa-image text-danger" />
-                    <input type="file" name="file" id="file"
-                        multiple accept="image/*,video/*" onChange={handleChangeMedia} />
-                </div>
-
+                <IconButton
+                    color={Boolean(emojiRefEl) ? 'success' : 'default'}
+                    sx={{ position: 'relative' }}
+                    onClick={(e) => setEmojiRefEl(ele => ele ? null : e.currentTarget)}
+                >
+                    <SentimentVerySatisfiedOutlinedIcon />
+                </IconButton>
+                <Popper
+                    open={Boolean(emojiRefEl)}
+                    anchorEl={emojiRefEl}
+                    placement='top-start'
+                    sx={{ zIndex: 9999 }}
+                >
+                    <Icons setContent={setText} content={text} theme={theme} />
+                </Popper>
 
                 <button type="submit" className="material-icons"
-                    disabled={(text || media.length > 0) ? false : true}>
+                    disabled={text ? false : true}>
                     near_me
                 </button>
             </form>
-        </>
-    );
+        </Box>
+    )
 }
 
-export default RightSide;
+export default RightSide

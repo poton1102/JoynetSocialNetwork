@@ -1,23 +1,31 @@
+import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
+import Stack from '@mui/material/Stack'
+import useTheme from '@mui/material/styles/useTheme'
 import React from 'react'
+import { useSelector } from 'react-redux'
 import LeftSide from '../../components/message/LeftSide'
+import RightSide from '../../components/message/RightSide'
 
 const Message = () => {
+    const { message } = useSelector(state => state)
+
     return (
-        <div className="message d-flex mt-70 main ">
-            <div className="col-md-4 border-right px-0 mt-70">
+        <Stack direction='row' sx={{ background: '#fff', marginTop: '100px', mx: 3, boxShadow: 2, borderRadius: 1, height: '80vh' }}>
+            <Stack sx={{ flexBasis: '30%' }}>
                 <LeftSide />
-            </div>
-
-            <div className="col-md-8 px-0 right_mess mt-70">
-                <div className="d-flex justify-content-center align-items-center flex-column h-100">
-
-                    <i className="fab fa-facebook-messenger text-primary"
-                        style={{ fontSize: '5rem' }} />
-                    {/* <img alt='' href="../../../public/joynet-logo.png"></img> */}
-                    <h4>Joynet</h4>
-                </div>
-            </div>
-        </div>
+            </Stack>
+            <Divider orientation="vertical" flexItem />
+            {message.selectedChat ?
+                <RightSide /> :
+                <Box sx={{ flex: 1 }}>
+                    <div className="d-flex justify-content-center 
+                align-items-center flex-column h-100">
+                        <h4>Click on a user to start chatting</h4>
+                    </div>
+                </Box>
+            }
+        </Stack>
     )
 }
 

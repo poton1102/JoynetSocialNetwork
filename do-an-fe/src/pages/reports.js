@@ -28,7 +28,7 @@ function Report() {
 
     return (
         <div className='mt-70'>
-            <h1 className='text-center123 text-justify'>Báo cáo các bài viết</h1>
+            <h1 className='text-center123 text-justify'>Báo cáo bài viết</h1>
 
             <div style={{ overflowX: "auto" }}>
                 <table className="customers">
@@ -58,10 +58,15 @@ function Report() {
                                 <td> {moment(report.createdAt).fromNow()}</td>
 
                                 <td>
+                                    <i className="fas fa-trash text-danger"
+                                        onClick={() => handleDeleteReport(report._id)}
+                                    />
+                                    &nbsp; &nbsp;&nbsp;
                                     <i className="fas fa-trash text-primary"
                                         onClick={() => handleDeleteReport(report._id)}
                                     />
                                 </td>
+
                             </tr>
                         ))}
                     </tbody>
