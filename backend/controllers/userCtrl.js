@@ -41,7 +41,7 @@ const userCtrl = {
     follow: async (req, res) => {
         try {
             const user = await Users.find({ _id: req.params.id, followers: req.user._id })
-            if (user.length > 0) return res.status(500).json({ msg: "You followed this user." })
+            if (user.length > 0) return res.status(500).json({ msg: "Bạn đã theo dõi người này." })
 
             const newUser = await Users.findOneAndUpdate({ _id: req.params.id }, {
                 $push: { followers: req.user._id }

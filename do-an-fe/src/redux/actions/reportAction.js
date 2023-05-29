@@ -90,80 +90,20 @@ export const deleteReport = ({ report, auth, socket }) => async (dispatch) => {
 }
 
 
-// export const deleteReport = ({ reportId, auth, socket }) => async (dispatch) => {
-//     // console.log({post,auth})
-
-//     try {
-//         // const res = await deleteDataAPI(`report/${report.reports._id}`, auth.token)
-//         await deleteDataAPI(`report/${reportId}`, auth.token)
-//         dispatch({ type: REPORT_TYPES.DELETE_REPORT, payload: reportId })
-
-//         // Gọi API để lấy danh sách báo cáo mới từ backend
-//         const res = await getDataAPI('reports', auth.token);
-//         dispatch({ type: REPORT_TYPES.GET_ALL_REPORT, payload: { ...res.data } })
 
 
-//         // Notify
-//         const msg = {
-//             id: res.data.newPost._id,
-//             text: 'added a new post.',
-//             recipients: res.data.newPost.user.followers,
-//             url: `/post/${}`,
-
-//         }
-
-//         dispatch(createNotify({ msg, auth, socket }))
-//         // console.log(res)
-//         // Notify
-//         // const msg = {
-//         //     id: reportId,
-//         //     text: 'đã xóa bài viết của bạn vì vi phạm.',
-//         //     // recipients: res.data.newPost.user.followers,
-//         //     url: `/post/${reportId}`,
-//         // }
-//         // dispatch(createNotify({ msg, auth, socket }))
-//         // dispatch(removeNotify({ msg, auth, socket }))
-//         // Notify
-//         // const msg = {
-//         //     id: post._id,
-//         //     text: 'added a new post.',
-//         //     recipients: res.data.newPost.user.followers,
-//         //     url: `/post/${post._id}`,
-//         // }
-
-//         // dispatch(removeNotify({ msg, auth, socket }))
-//     }
-//     catch (err) {
-//         dispatch({
-//             type: GLOBALTYPES.ALERT,
-//             payload: { error: err.response.data.msg }
-//         })
-//     }
-// }
-
-
-
-export const deleteReportOnly = ({ reportId, auth, socket }) => async (dispatch) => {
-    // console.log({post,auth})
+export const deleteReportOnly = ({ report, auth, socket }) => async (dispatch) => {
+    console.log({ report });
 
     try {
         // const res = await deleteDataAPI(`report/${report.reports._id}`, auth.token)
-        await deleteDataAPI(`report/${reportId}`, auth.token)
-        dispatch({ type: REPORT_TYPES.DELETE_REPORT, payload: reportId })
+        //-------------------
+        await deleteDataAPI(`reportOnly/${report._id}`, auth.token)
+        dispatch({ type: REPORT_TYPES.DELETE_REPORT_ONLY, payload: report._id })
 
         // Gọi API để lấy danh sách báo cáo mới từ backend
         const res = await getDataAPI('reports', auth.token);
         dispatch({ type: REPORT_TYPES.GET_ALL_REPORT, payload: { ...res.data } })
-
-        // console.log(res)
-        // Notify
-        const msg = {
-            id: reportId,
-            text: 'đã xóa bài viết của bạn vì vi phạm.',
-            recipients: res.data.newPost.user.followers,
-            url: `/post/${reportId}`,
-        }
-
 
     }
     catch (err) {
@@ -173,5 +113,3 @@ export const deleteReportOnly = ({ reportId, auth, socket }) => async (dispatch)
         })
     }
 }
-
-

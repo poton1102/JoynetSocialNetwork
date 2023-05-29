@@ -37,11 +37,11 @@ function FollowBtn({ user }) {
         <>
             {
                 followed
-                    ? <button className="btn btn-outline-danger"
+                    ? <button className="btn btn-danger"
                         onClick={handleUnFollow}>
                         Bỏ theo dõi
                     </button>
-                    : <button className="btn btn-outline-info"
+                    : <button className="btn btn-success"
                         onClick={handleFollow}>
                         Theo dõi
                     </button>

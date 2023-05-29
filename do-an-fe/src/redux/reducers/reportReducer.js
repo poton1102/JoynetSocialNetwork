@@ -32,6 +32,12 @@ const reportReducer = (state = initialState, action) => {
                 // reports: DeleteData(state.reports, action.payload)
                 reports: state.reports.filter(report => report._id !== action.payload)
             };
+        case REPORT_TYPES.DELETE_REPORT_ONLY:
+            return {
+                ...state,
+                // reports: DeleteData(state.reports, action.payload)
+                reports: state.reports.filter(report => report._id !== action.payload)
+            };
         default:
             return state
     }

@@ -144,10 +144,11 @@
 
 /* -------- Chat Container ----- */
 .chat_container {
-    width: 100%;
-    height: calc(100% - 110px);
+    flex: 1;
     overflow-y: auto;
     padding: 0 10px;
+    display: flex;
+    flex-direction: column-reverse;
 }
 
 .chat_display {

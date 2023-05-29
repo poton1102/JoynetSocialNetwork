@@ -6,4 +6,5 @@ router.get('/reports', adminCtrl.getReports)
 
 router.delete('/report/:id', adminCtrl.deleteReport);
 
+router.delete('/reportOnly/:id', adminCtrl.deleteReportOnly);
 module.exports = router

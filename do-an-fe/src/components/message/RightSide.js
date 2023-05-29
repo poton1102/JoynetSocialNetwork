@@ -30,11 +30,11 @@ const RightSide = () => {
 
     const [messages, setMessages] = useState([])
     const [hasMoreMessages, setHasMoreMessages] = useState(true);
-    const [firstLoadMessage, setFirstLoadMessage] = useState(true)
     const [messagesLength, setMessagesLength] = useState(0)
     const [page, setPage] = useState(1)
 
     const [socketConnected, setSocketConnected] = useState(false);
+    const [firstLoad, setFirstLoad] = useState(false);
     const [loading, setLoading] = useState(false);
     const [typing, setTyping] = useState(false);
     const [istyping, setIsTyping] = useState(false);
@@ -55,7 +55,7 @@ const RightSide = () => {
             );
             socket.emit("new message", data);
             setText('')
-            setMessages([...messages, data]);
+            setMessages([data, ...messages]);
             setMessagesLength(prevLength => prevLength + 1)
         } catch (error) {
             dispatch({ type: GLOBALTYPES.ALERT, payload: { error: error.msg } })
@@ -63,27 +63,27 @@ const RightSide = () => {
     }
 
     const fetchMessages = async (firstLoad = false) => {
-        if (!message.selectedChat) return;
         if (!hasMoreMessages) return;
+        if (loading) return;
 
         try {
-            if (firstLoad) setLoading(true);
-
-            const { data } = await getDataAPI(`message/${message.selectedChat._id}?page=${page}&limit=14`, auth.token)
+            if (firstLoad) setFirstLoad(true);
+            setLoading(true)
+            console.log(page)
+            const { data } = await getDataAPI(`message/${message.selectedChat._id}?page=${page}&limit=20`, auth.token)
 
             setMessages(prevMessages => {
-                const newMessages = [...data.messages, ...prevMessages]
+                const newMessages = [...prevMessages, ...data.messages]
                 if (data.messages.length === 0) setHasMoreMessages(false)
                 setMessagesLength(newMessages.length)
                 return newMessages
             });
 
-            // setPage(prevPage => prevPage + 1)
-            // setFirstLoadMessage(false)
-            socket.emit("join chat", message.selectedChat._id);
+            if (firstLoad) socket.emit("join chat", message.selectedChat._id);
         } catch (error) {
             dispatch({ type: GLOBALTYPES.ALERT, payload: { error: error.msg } })
         }
+        setFirstLoad(false)
         setLoading(false);
     };
 
@@ -108,43 +108,29 @@ const RightSide = () => {
         }, timerLength);
     }
 
-    const fetchMoreRef = useIntersectionObserver(() => setPage(prevPage => prevPage + 1));
+    const fetchMoreRef = useIntersectionObserver(() => {
+        if (loading) return;
+        setPage(prevPage => prevPage + 1)
+    });
+
+    useEffect(() => {
+        if (message.selectedChat) fetchMessages(true)
+
+        return () => {
+            console.log('clear')
+            setPage(1)
+            setMessages([])
+            setMessagesLength(0)
+            setHasMoreMessages(true)
+        }
+        // eslint-disable-next-line
+    }, [message.selectedChat])
 
     useEffect(() => {
         if (page > 1) fetchMessages()
         // eslint-disable-next-line
     }, [page])
 
-    useEffect(() => {
-        // setFirstLoadMessage(true)
-        // setPage(1)
-        // setMessages([])
-        // setMessagesLength(0)
-        fetchMessages(true)
-        // eslint-disable-next-line
-    }, [message.selectedChat])
-
-
-    // useEffect(() => {
-    //     const observer = new IntersectionObserver(entries => {
-    //         if (entries[0].isIntersecting) {
-    //             setPage(p => p + 1)
-    //         }
-    //     }, {
-    //         threshold: 0.1
-    //     })
-
-    //     if (messageRef) observer.observe(messageRef)
-
-    //     return () => {
-    //         observer.disconnect()
-    //     }
-    // }, [messageRef])
-
-    // useEffect(() => {
-    //     if ((messagesLength >= (page - 1) * 9 && page > 1) || firstLoadMessage) fetchMessages()
-    //     // eslint-disable-next-line
-    // }, [page, firstLoadMessage])
 
     useEffect(() => {
         socket.emit("setup", auth.user);
@@ -153,14 +139,14 @@ const RightSide = () => {
         socket.on("typing", () => setIsTyping(true));
         socket.on("stop typing", () => setIsTyping(false));
 
-        socket.on("message recieved", (newMessageRecieved) => setMessages([...messages, newMessageRecieved]));
+        socket.on("message recieved", (newMessageRecieved) => setMessages([newMessageRecieved, ...messages]));
         // eslint-disable-next-line
     }, [socket, messages]);
 
     return (
-        <Box sx={{ flex: 1 }}>
+        <Stack sx={{ flex: 1 }}>
             <div className="message_header" style={{ cursor: 'pointer' }} >
-                {(loading) ?
+                {firstLoad ?
                     <UserCardSkeleton primaryWidth='150px' secondaryWidth='100px' /> : <>
                         {!message.selectedChat.isGroupChat ?
                             <Stack ml={2} direction='row' spacing={2} alignItems='center'>
@@ -182,7 +168,7 @@ const RightSide = () => {
                                         <SmallAvatar src={message.selectedChat.users[0].avatar} />
                                     }
                                 >
-                                    <Avatar src={message.selectedChat?.users[1]?.avatar} />
+                                    <Avatar src={message.selectedChat.users[1].avatar} />
                                 </Badge>
                                 <UpdateGroupChat />
                             </Stack>
@@ -192,13 +178,12 @@ const RightSide = () => {
             </div>
 
             <div className="chat_container">
-                <div className="chat_display">
-                    {(loading) ? <>
+                {
+                    firstLoad ? <>
                         {Array.from({ length: 25 }).map((_, i) => (<Skeleton key={i} />))}
                     </> :
-                        <ScrollableChat messages={messages} istyping={istyping} fetchMoreRef={fetchMoreRef} hasMoreMessages={hasMoreMessages} />
-                    }
-                </div>
+                        <ScrollableChat messages={messages} fetchMoreRef={fetchMoreRef} hasMoreMessages={hasMoreMessages} />
+                }
             </div>
 
             <form className="chat_input" onSubmit={handleSubmit} >
@@ -231,7 +216,7 @@ const RightSide = () => {
                     near_me
                 </button>
             </form>
-        </Box>
+        </Stack>
     )
 }
 

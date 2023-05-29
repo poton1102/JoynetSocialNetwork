@@ -9,10 +9,10 @@ const Register = () => {
     const history = useHistory()
 
     const initialState = {
-        fullname: '', username: '', email: '', password: '', cf_password: '', gender: 'male'
+        fullname: '', username: '', email: '', password: '', birthday: '', cf_password: '', gender: 'male'
     }
     const [userData, setUserData] = useState(initialState)
-    const { fullname, username, email, password, cf_password } = userData
+    const { fullname, username, email, birthday, password, cf_password } = userData
 
     const [typePass, setTypePass] = useState(false)
     const [typeCfPass, setTypeCfPass] = useState(false)
@@ -71,6 +71,33 @@ const Register = () => {
                 </div>
 
                 <div className="form-group">
+                    <label htmlFor="exampleInputEmail1">Ngày sinh</label>
+                    <input type="date" className="form-control" id="exampleInputEmail1" name="birthday"
+                        onChange={handleChangeInput} value={birthday}
+                        style={{ background: `${alert.birthday ? '#fd2d6a14' : ''}` }} />
+
+                    <small className="form-text text-danger">
+                        {alert.birthday ? alert.birthday : ''}
+                    </small>
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="exampleInputPassword1">Giới tính</label>
+                    <div className="row justify-content-between mx-0 mb-1">
+                        <label htmlFor="male">
+                            Nam: <input type="radio" id="male" name="gender"
+                                value="male" defaultChecked onChange={handleChangeInput} />
+                        </label>
+
+                        <label htmlFor="female">
+                            Nữ: <input type="radio" id="female" name="gender"
+                                value="female" onChange={handleChangeInput} />
+                        </label>
+
+                    </div>
+                </div>
+
+                <div className="form-group">
                     <label htmlFor="exampleInputPassword1">Mật khẩu</label>
 
                     <div className="pass">
@@ -110,29 +137,14 @@ const Register = () => {
                     </small>
                 </div>
 
-                <div className="row justify-content-between mx-0 mb-1">
-                    <label htmlFor="male">
-                        Nam: <input type="radio" id="male" name="gender"
-                            value="male" defaultChecked onChange={handleChangeInput} />
-                    </label>
 
-                    <label htmlFor="female">
-                        Nữ: <input type="radio" id="female" name="gender"
-                            value="female" onChange={handleChangeInput} />
-                    </label>
-
-                    <label htmlFor="other">
-                        Khác: <input type="radio" id="other" name="gender"
-                            value="other" onChange={handleChangeInput} />
-                    </label>
-                </div>
 
                 <button type="submit" className="btn btn-dark w-100 bg-primary">
                     Đăng ký
                 </button>
 
                 <p className="my-2">
-                    Bạn đã có tài khoản? <Link to="/" style={{ color: "0066ff" }}>Đăng nhập ngay</Link>
+                    Bạn đã có tài khoản?&emsp;&emsp;&emsp;&emsp;&emsp;  <Link to="/" style={{ color: "0066ff" }}>Đăng nhập ngay</Link>
                 </p>
             </form>
         </div>

@@ -55,7 +55,7 @@ function Info({ id, auth, profile, dispatch }) {
                                 {
                                     //nếu không phải là nick mình thì sang nick khác sẽ hiện follow
                                     user._id === auth.user._id
-                                        ? <button className="btn btn-outline-info"
+                                        ? <button className="btn btn-info"
                                             onClick={() => setOnEdit(true)}>
                                             Sửa thông tin
                                         </button>

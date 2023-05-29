@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { createComment } from '../../redux/actions/commentAction'
 import Icons from '../Icons'
+import SendIcon from '@mui/icons-material/Send';
+import IconButton from '@mui/material/IconButton';
 
 const InputComment = ({ children, post, onReply, setOnReply }) => {
     const [content, setContent] = useState('')
@@ -34,7 +36,7 @@ const InputComment = ({ children, post, onReply, setOnReply }) => {
 
     return (
 
-        <form className="card-footer comment_input" onSubmit={handleSubmit}>
+        <form className="comment_input" onSubmit={handleSubmit}>
             {children}
 
             <input type="text" placeholder="Bình luận..."
@@ -44,13 +46,17 @@ const InputComment = ({ children, post, onReply, setOnReply }) => {
                     filter: theme ? 'invert(1)' : 'invert(0)',
                     color: theme ? 'white' : '#111',
                     background: theme ? 'rgba(0,0,0,.03)' : '',
-                }} />
+                }}
+            />
 
             <Icons setContent={setContent} content={content} theme={theme} />
 
-            <button type="submit" className="postBtn">
+            {/* <button type="submit" className="postBtn">
                 Đăng
-            </button>
+            </button> */}
+            <IconButton color='primary' type='submit' disabled={!content}>
+                <SendIcon sx={{ fontSize: 25 }} />
+            </IconButton>
         </form>
     )
 }

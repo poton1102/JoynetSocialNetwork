@@ -1,12 +1,19 @@
-.auth_page{
+.auth_page {
     width: 100%;
     min-height: 100vh;
     background: #fdfdfd;
     display: flex;
     align-items: center;
     justify-content: center;
+    /* background-image: url("image4.jpg"); */
+    background-image: url("image.jpg");
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
-.auth_page form{
+
+.auth_page form {
     background: #fff;
     max-width: 400px;
     width: 100%;
@@ -14,11 +21,11 @@
     padding: 50px 25px;
 }
 
-.auth_page form .pass{
+.auth_page form .pass {
     position: relative;
 }
 
-.auth_page form .pass small{
+.auth_page form .pass small {
     position: absolute;
     top: 50%;
     right: 5px;

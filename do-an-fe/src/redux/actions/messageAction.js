@@ -43,11 +43,13 @@ export const accessChat = ({ userId, auth, }) => async (dispatch) => {
 
 export const getConversations = ({ auth, page = 1 }) => async (dispatch) => {
     try {
-        const res = await getDataAPI(`conversations?limit=${page * 9}`, auth.token)
+        const res = await getDataAPI(`conversations?page=${page}&limit=9`, auth.token)
         dispatch({
             type: MESS_TYPES.GET_CONVERSATIONS,
             payload: { ...res.data }
         })
+
+        return { ...res.data }
 
     } catch (err) {
         dispatch({ type: GLOBALTYPES.ALERT, payload: { error: err.response.data.msg } })

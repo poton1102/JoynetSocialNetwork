@@ -11,9 +11,10 @@ const Menu = () => {
     const { auth, theme, notify } = useSelector(state => state)
     const navLinks = [
         // { label: 'Reports', icon: 'report', path: '/reports', admin: true },
-        { label: 'Home', icon: 'home', path: '/' },
-        { label: 'Message', icon: 'chat', path: '/message' },
-        { label: 'Discover', icon: 'explore', path: '/discover' },
+        { label: 'Home', icon: 'house', path: '/' },
+        { label: 'Discover', icon: 'travel_explore', path: '/discover' },
+        { label: 'Message', icon: 'forum', path: '/message' },
+
     ]
 
     if (auth.user.role === 'admin') {

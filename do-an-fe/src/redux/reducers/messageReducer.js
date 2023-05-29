@@ -21,14 +21,6 @@ const initialState = {
 
 const messageReducer = (state = initialState, action) => {
     switch (action.type) {
-        // case MESS_TYPES.ADD_USER:
-        //     if (state.users.every(item => item._id !== action.payload._id)) {
-        //         return {
-        //             ...state,
-        //             users: [action.payload, ...state.users]
-        //         };
-        //     }
-        //     return state;
         case MESS_TYPES.ADD_CHAT:
             if (state.chats.every(item => item._id !== action.payload._id)) {
                 return {
@@ -60,17 +52,11 @@ const messageReducer = (state = initialState, action) => {
                         : user
                 )
             };
-        // case MESS_TYPES.GET_CONVERSATIONS:
-        //     return {
-        //         ...state,
-        //         users: action.payload.newArr,
-        //         resultUsers: action.payload.result,
-        //         firstLoad: true
-        //     };
         case MESS_TYPES.GET_CONVERSATIONS:
             return {
                 ...state,
-                ...action.payload,
+                chats: [...state.chats, ...action.payload.chats],
+                chatLengths: state.chatsLength + action.payload.chatsLength
             };
         case MESS_TYPES.SET_SELECTED_CHAT:
             return {

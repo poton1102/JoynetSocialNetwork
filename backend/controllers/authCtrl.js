@@ -6,8 +6,17 @@ const jwt = require('jsonwebtoken')
 const authCtrl = {
     register: async (req, res) => {
         try {
-            const { fullname, username, email, password, gender } = req.body
+            const { fullname, username, email, password, gender, birthday } = req.body
             let newUserName = username.toLowerCase().replace(/ /g, '')
+
+
+            // Kiểm tra tuổi
+            const currentDate = new Date()
+            const userBirthday = new Date(birthday)
+            const age = currentDate.getFullYear() - userBirthday.getFullYear()
+            if (age < 18) {
+                return res.status(400).json({ msg: "Bạn phải đủ 18 tuổi để đăng ký." })
+            }
 
             const user_name = await Users.findOne({ username: newUserName })
             if (user_name) return res.status(400).json({ msg: "Tên user đã tồn tại." })

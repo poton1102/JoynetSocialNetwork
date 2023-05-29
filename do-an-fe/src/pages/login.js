@@ -39,9 +39,9 @@ const Login = () => {
                     <input type="email" className="form-control" id="exampleInputEmail1" name="email"
                         aria-describedby="emailHelp" onChange={handleChangeInput} value={email} />
 
-                    <small id="emailHelp" className="form-text text-muted">
+                    {/* <small id="emailHelp" className="form-text text-muted">
                         Chúng tôi sẽ không chia sẻ email cho ai
-                    </small>
+                    </small> */}
                 </div>
 
                 <div className="form-group">
@@ -66,7 +66,7 @@ const Login = () => {
                 </button>
 
                 <p className="my-2">
-                    Bạn không có tài khoản? <Link to="/register" style={{ color: "0066ff" }}>Đăng ký ngay</Link>
+                    Bạn không có tài khoản?&emsp;&emsp;&emsp;&emsp; <Link to="/register" style={{ color: "0066ff" }}>Đăng ký ngay</Link>
                 </p>
             </form>
         </div>

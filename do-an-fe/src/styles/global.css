@@ -34,7 +34,12 @@ code {
 .App {
   width: 100%;
   min-height: 100vh;
-  background: white;
+  /* background: white; */
+  /* background-image: url("image.jpg");
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover; */
 }
 
 .main1 {

@@ -1,32 +1,49 @@
-const valid = ({fullname, username, email, password, cf_password}) => {
+const valid = ({ fullname, username, email, birthday, password, cf_password }) => {
     const err = {}
 
-    if(!fullname) {
-        err.fullname = "Please add your full name."
-    }else if(fullname.length > 25){
-        err.fullname = "Full name is up to 25 characters long."
+    if (!fullname) {
+        err.fullname = "Hãy ghi tên của bạn."
+    } else if (fullname.length < 5) {
+        err.fullname = "Tên phải trên 5 ký tự."
     }
 
-    if(!username) {
-        err.username = "Please add your user name."
-    }else if(username.replace(/ /g, '').length > 25){
-        err.username = "User name is up to 25 characters long."
+    if (!username) {
+        err.username = "Hãy ghi username của bạn."
+    } else if (username.replace(/ /g, '').length > 25) {
+        err.username = "Username chỉ có tối đa 25 kí tự."
     }
 
-    if(!email) {
-        err.email = "Please add your email."
-    }else if(!validateEmail(email)){
-        err.email = "Email format is incorrect."
+    if (!email) {
+        err.email = "Hãy ghi email của bạn."
+    } else if (!validateEmail(email)) {
+        err.email = "Email chưa đúng định dạng."
     }
 
-    if(!password) {
-        err.password = "Please add your password."
-    }else if(password.length < 6){
-        err.password = "Password must be at least 6 characters."
+    if (!birthday) {
+        err.birthday = "Hãy ghi ngày sinh của bạn."
+    }
+    else {
+        const currentDate = new Date();
+        const userBirthday = new Date(birthday);
+        const ageDiff = currentDate.getFullYear() - userBirthday.getFullYear();
+
+        // Kiểm tra xem người dùng có trên 18 tuổi hay không
+        if (ageDiff < 18) {
+            err.birthday = "Bạn phải trên 18 tuổi để đăng ký."
+        }
+    }
+    // else if (!validateEmail(email)) {
+    //     err.email = "Email chưa đúng định dạng."
+    // }
+
+    if (!password) {
+        err.password = "Hãy ghi password của bạn."
+    } else if (password.length < 6) {
+        err.password = "Mật khẩu phải trên 6 kí tự."
     }
 
-    if(password !== cf_password) {
-        err.cf_password = "Confirm password did not match."
+    if (password !== cf_password) {
+        err.cf_password = "Xác nhận mật khẩu không chính xác."
     }
 
     return {
@@ -42,5 +59,5 @@ function validateEmail(email) {
     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
 }
-  
+
 export default valid
